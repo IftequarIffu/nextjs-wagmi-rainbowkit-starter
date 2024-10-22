@@ -37,18 +37,18 @@ export default function Dashboard() {
           <SidebarHeader>
             <SidebarMenuButton size="lg">
               <div className="flex items-center space-x-2">
-                <div className="rounded-full bg-primary p-1">
+                {/* <div className="rounded-full bg-primary p-1">
                   <PlusCircle className="h-4 w-4 text-primary-foreground" />
-                </div>
-                <span className="font-bold text-xl">CartooNFT</span>
+                </div> */}
+                <span className="font-bold text-2xl tracking-wider ms-4">CartooNFT</span>
               </div>
             </SidebarMenuButton>
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu className='space-y-2 mt-4'>
-              <SidebarMenuItem className='ms-3'>
+              <SidebarMenuItem >
                 <SidebarMenuButton asChild isActive>
-                  <Link href="/dashboard" className="flex items-center space-x-2">
+                  <Link href="/dashboard" className="flex items-center space-x-2 ps-6">
                     <LayoutDashboard className="h-4 w-4" />
                     <span className='text-lg'>Dashboard</span>
                   </Link>
