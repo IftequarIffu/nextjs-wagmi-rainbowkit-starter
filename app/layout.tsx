@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./providers";
 import '@rainbow-me/rainbowkit/styles.css';
+import { ThemeProvider } from "./theme-provider"
+
 
 
 const geistSans = localFont({
@@ -31,7 +33,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >{children}
+        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
