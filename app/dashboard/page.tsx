@@ -20,6 +20,8 @@ import {
   SidebarInset,
 } from '@/components/ui/sidebar'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { useAccount } from 'wagmi';
+
 
 export default function Dashboard() {
   const nfts = [
@@ -29,6 +31,8 @@ export default function Dashboard() {
     { id: 4, name: "Pixel Paradise #13", price: "0.6 ETH", image: "/4.svg" },
     { id: 5, name: "Ethereal Echo #21", price: "0.4 ETH", image: "/5.svg" },
   ]
+
+  const {address} = useAccount()
 
   return (
     <SidebarProvider>
@@ -63,6 +67,7 @@ export default function Dashboard() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
+            <span className='mt-auto text-ellipsis w-full'>{`${address}`}</span>
           </SidebarContent>
           <SidebarRail />
         </Sidebar>
@@ -97,7 +102,7 @@ export default function Dashboard() {
                       className="h-48 w-full object-contain"
                     />
                   </CardHeader>
-                  <CardContent className="p-4">
+                  <CardContent className="px-4 py-2 mt-4 flex flex-col space-y-1">
                     <CardTitle>{nft.name}</CardTitle>
                     <p className="text-sm text-gray-500">{nft.price}</p>
                   </CardContent>
