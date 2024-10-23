@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import * as React from 'react'
@@ -17,11 +18,12 @@ import { PlusCircle, Upload } from "lucide-react"
 import { Card, CardContent } from './ui/card'
 import Image from 'next/image'
 
-export default function MintNftModal() {
+export default function MintNftModal({nfts, setNfts}: {nfts: any, setNfts: (nfts: any[]) => void}) {
   const [name, setName] = React.useState('')
   const [price, setPrice] = React.useState('')
   const [image, setImage] = React.useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
+  const [open, setOpen] = React.useState(false)
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -31,20 +33,22 @@ export default function MintNftModal() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would typically send the data to your backend
-    console.log('Submitting NFT:', { name, price, image })
-    // Reset form after submission
-    setName('')
-    setPrice('')
-    setImage(null)
-    setPreviewUrl(null)
-  }
+//   const handleSubmit = (e: React.FormEvent) => {
+//     e.preventDefault()
+//     // Here you would typically send the data to your backend
+//     // console.log('Submitting NFT:', { name, price, image })
+//     // // Reset form after submission
+//     // setName('')
+//     // setPrice('')
+//     // setImage(null)
+//     // setPreviewUrl(null)
+//     // e.preventDefault();
+//     setNfts([...nfts, {id: nfts.length + 1, name: name, price: price, image: previewUrl}])
+//   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Dialog open={open} onOpenChange={setOpen}>
+      {/* <DialogTrigger asChild> */}
         {/* <Button variant="outline">
           <PlusCircle className="mr-2 h-4 w-4" />
           Create NFT
@@ -55,14 +59,14 @@ export default function MintNftModal() {
                 variant="outline"
                 size="lg"
                 className="h-48 w-48 rounded-full"
-
+                onClick={() => setOpen(true)}
                 >
                 <PlusCircle className="h-24 w-24" />
                 <span className="sr-only">Add new NFT</span>
                 </Button>
             </CardContent>
         </Card>
-      </DialogTrigger>
+      {/* </DialogTrigger> */}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create New NFT</DialogTitle>
@@ -70,7 +74,9 @@ export default function MintNftModal() {
             Enter the details of your new NFT here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form 
+        // onSubmit={handleSubmit}
+        >
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
@@ -149,7 +155,16 @@ export default function MintNftModal() {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Save NFT</Button>
+            <Button type="submit" 
+            onClick={
+                    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => 
+                    {
+                        e.preventDefault();
+                        setNfts([...nfts, {id: nfts.length + 1, name: name, price: price, image: previewUrl}])
+                        setOpen(false)
+                    }
+                }
+                >Save NFT</Button>
           </DialogFooter>
         </form>
       </DialogContent>

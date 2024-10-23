@@ -34,13 +34,15 @@ import MintNftModal from '@/components/MintNftModal'
 
 
 export default function Dashboard() {
-  const nfts = [
+  const Nfts = [
     { id: 1, name: "Cosmic Voyager #1", price: "0.5 ETH", image: "/6.svg" },
     { id: 2, name: "Digital Dream #42", price: "0.7 ETH", image: "/7.svg" },
     { id: 3, name: "Neon Nebula #7", price: "0.3 ETH", image: "/8.svg" },
     { id: 4, name: "Pixel Paradise #13", price: "0.6 ETH", image: "/9.svg" },
     { id: 5, name: "Ethereal Echo #21", price: "0.4 ETH", image: "/10.svg" },
   ]
+
+  const [nfts, setNfts] = React.useState(Nfts)
   
   interface NFT {
     id: number
@@ -159,7 +161,7 @@ export default function Dashboard() {
                   </Button>
                 </CardContent>
               </Card> */}
-              <MintNftModal />
+              <MintNftModal nfts={nfts} setNfts={setNfts} />
             </div>
           </main>
         </SidebarInset>
