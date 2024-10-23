@@ -9,7 +9,7 @@ export default function LandingPageHeroSection() {
       <div className="relative container mx-auto px-4">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
           <div className="max-w-xl">
-            <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="mb-4 text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl">
               Discover, Collect, and Sell Extraordinary NFTs
             </h1>
             <p className="mb-8 text-lg text-gray-300 sm:text-xl">
