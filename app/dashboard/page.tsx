@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import * as React from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { PlusCircle, LayoutDashboard, ShoppingBag, Search } from "lucide-react"
+import { PlusCircle, LayoutDashboard, ShoppingBag, Search, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -21,6 +22,14 @@ import {
 } from '@/components/ui/sidebar'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { useAccount } from 'wagmi';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+  } from "@/components/ui/dialog"
 
 
 export default function Dashboard() {
@@ -31,6 +40,27 @@ export default function Dashboard() {
     { id: 4, name: "Pixel Paradise #13", price: "0.6 ETH", image: "/4.svg" },
     { id: 5, name: "Ethereal Echo #21", price: "0.4 ETH", image: "/5.svg" },
   ]
+  
+  interface NFT {
+    id: number
+    name: string
+    price: string
+    image: string
+  }
+
+  const [selectedNFT, setSelectedNFT] = React.useState<NFT | null>(null)
+  const [isModalOpen, setIsModalOpen] = React.useState(false)
+
+  const openModal = (nft: NFT) => {
+    setSelectedNFT(nft)
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setSelectedNFT(null)
+    setIsModalOpen(false)
+  }
+
 
   const {address} = useAccount()
 
@@ -107,7 +137,7 @@ export default function Dashboard() {
                     <p className="text-sm text-gray-500">{nft.price}</p>
                   </CardContent>
                   <CardFooter className="p-4">
-                    <Button className="w-full">View Details</Button>
+                    <Button className="w-full" onClick={() => openModal(nft)}>View Details</Button>
                   </CardFooter>
                 </Card>
               ))}
@@ -117,6 +147,7 @@ export default function Dashboard() {
                     variant="outline"
                     size="lg"
                     className="h-24 w-24 rounded-full"
+
                   >
                     <PlusCircle className="h-12 w-12" />
                     <span className="sr-only">Add new NFT</span>
@@ -127,6 +158,33 @@ export default function Dashboard() {
           </main>
         </SidebarInset>
       </div>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{selectedNFT?.name}</DialogTitle>
+            <DialogDescription>NFT Details</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="relative aspect-square overflow-hidden rounded-lg">
+              {selectedNFT && (
+                <Image
+                  src={selectedNFT.image}
+                  alt={selectedNFT.name}
+                  layout="fill"
+                  objectFit="cover"
+                />
+              )}
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="font-bold">Price:</span>
+              <span>{selectedNFT?.price}</span>
+            </div>
+            <Button onClick={() => console.log(`Listing NFT: ${selectedNFT?.name}`)}>
+              List NFT
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   )
 }
