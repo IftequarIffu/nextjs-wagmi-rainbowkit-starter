@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import '@rainbow-me/rainbowkit/styles.css';
 import { ThemeProvider } from "./theme-provider"
 import { Fredoka } from "next/font/google"
+import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
 // import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 
@@ -46,7 +47,9 @@ export default function RootLayout({
             {/* <nav className='flex justify-end p-4'>
               <ConnectButton />
             </nav> */}
-            {children}
+            {/* <BackgroundGradientAnimation> */}
+              {children}
+            {/* </BackgroundGradientAnimation> */}
         </ThemeProvider>
         </Providers>
       </body>

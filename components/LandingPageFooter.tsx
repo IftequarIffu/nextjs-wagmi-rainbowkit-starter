@@ -73,7 +73,7 @@ export default function LandingPageFooter() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center">
-          <p className="text-sm">&copy; 2024 NFT Marketplace. All rights reserved.</p>
+          <p className="text-sm">&copy; 2024 {APP_NAME}. All rights reserved.</p>
           <div className="mt-4 sm:mt-0 space-x-4 text-sm">
             <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
