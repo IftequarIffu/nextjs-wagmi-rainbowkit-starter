@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { PlusCircle, Upload } from "lucide-react"
 import { Card, CardContent } from './ui/card'
+import Image from 'next/image'
 
 export default function MintNftModal() {
   const [name, setName] = React.useState('')
@@ -114,10 +115,12 @@ export default function MintNftModal() {
                   >
                     {previewUrl ? (
                         
-                        <img
+                        <Image
                             src={previewUrl}
                             alt="Preview"
-                            className="w-full h-full object-cover rounded-lg"
+                            className="w-full h-full object-contain rounded-lg"
+                            width={40}
+                            height={40}
                         />
                             
                         

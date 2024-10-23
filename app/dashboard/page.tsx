@@ -75,7 +75,9 @@ export default function Dashboard() {
                 {/* <div className="rounded-full bg-primary p-1">
                   <PlusCircle className="h-4 w-4 text-primary-foreground" />
                 </div> */}
-                <span className="font-bold text-2xl tracking-wider ms-4">CartooNFT</span>
+                <Link href={"/"} >
+                    <span className="font-bold text-2xl tracking-wider ms-4">CartooNFT</span>
+                </Link>
               </div>
             </SidebarMenuButton>
           </SidebarHeader>
