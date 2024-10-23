@@ -30,15 +30,16 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
+import MintNftModal from '@/components/MintNftModal'
 
 
 export default function Dashboard() {
   const nfts = [
-    { id: 1, name: "Cosmic Voyager #1", price: "0.5 ETH", image: "/1.svg" },
-    { id: 2, name: "Digital Dream #42", price: "0.7 ETH", image: "/2.svg" },
-    { id: 3, name: "Neon Nebula #7", price: "0.3 ETH", image: "/3.svg" },
-    { id: 4, name: "Pixel Paradise #13", price: "0.6 ETH", image: "/4.svg" },
-    { id: 5, name: "Ethereal Echo #21", price: "0.4 ETH", image: "/5.svg" },
+    { id: 1, name: "Cosmic Voyager #1", price: "0.5 ETH", image: "/6.svg" },
+    { id: 2, name: "Digital Dream #42", price: "0.7 ETH", image: "/7.svg" },
+    { id: 3, name: "Neon Nebula #7", price: "0.3 ETH", image: "/8.svg" },
+    { id: 4, name: "Pixel Paradise #13", price: "0.6 ETH", image: "/9.svg" },
+    { id: 5, name: "Ethereal Echo #21", price: "0.4 ETH", image: "/10.svg" },
   ]
   
   interface NFT {
@@ -124,15 +125,17 @@ export default function Dashboard() {
               {nfts.map((nft) => (
                 <Card key={nft.id} className="overflow-hidden border-none hover:bg-secondary hover:cursor-pointer p-2">
                   <CardHeader className="p-0">
+                  <div className="group relative w-64 h-64 overflow-hidden">
                     <Image
                       src={nft.image}
                       alt={nft.name}
                       width={50}
                       height={50}
-                      className="h-48 w-full object-contain"
+                      className="h-48 w-full object-contain transition-transform duration-300 ease-in-out transform group-hover:scale-110"
                     />
+                    </div>
                   </CardHeader>
-                  <CardContent className="px-4 py-2 mt-4 flex flex-col space-y-1">
+                  <CardContent className="px-4 py-2 flex flex-col space-y-1">
                     <CardTitle>{nft.name}</CardTitle>
                     <p className="text-sm text-gray-500">{nft.price}</p>
                   </CardContent>
@@ -141,7 +144,7 @@ export default function Dashboard() {
                   </CardFooter>
                 </Card>
               ))}
-              <Card className="flex items-center justify-center">
+              {/* <Card className="flex items-center justify-center">
                 <CardContent>
                   <Button
                     variant="outline"
@@ -153,7 +156,8 @@ export default function Dashboard() {
                     <span className="sr-only">Add new NFT</span>
                   </Button>
                 </CardContent>
-              </Card>
+              </Card> */}
+              <MintNftModal />
             </div>
           </main>
         </SidebarInset>
@@ -171,7 +175,7 @@ export default function Dashboard() {
                   src={selectedNFT.image}
                   alt={selectedNFT.name}
                   layout="fill"
-                  objectFit="cover"
+                  objectFit="contain"
                 />
               )}
             </div>
