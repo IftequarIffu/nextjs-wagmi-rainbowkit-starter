@@ -1,0 +1,53 @@
+import { Button } from "@/components/ui/button"
+import Image from "next/image"
+import Link from "next/link"
+
+export default function LandingPageHeroSection() {
+  return (
+    <section className="relative overflow-hidden md:py-10 sm:py-32">
+      <div className="absolute inset-0 " />
+      <div className="relative container mx-auto px-4">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
+          <div className="max-w-xl">
+            <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Discover, Collect, and Sell Extraordinary NFTs
+            </h1>
+            <p className="mb-8 text-lg text-gray-300 sm:text-xl">
+              Explore the world&apos;s leading NFT marketplace. Buy and sell digital art, collectibles, and more with ease and security.
+            </p>
+            <div className="flex flex-wrap gap-4">
+                <Link href={"/marketplace"}>
+                <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white">
+                    Explore NFTs
+                </Button>
+              </Link>
+              <Link href={"/dashboard"}>
+              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-purple-900">
+                Create NFT
+              </Button>
+              </Link>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:gap-6">
+            {[
+              "/33.svg",
+              "/44.svg",
+              "/55.svg",
+              "/66.svg"
+            ].map((src, index) => (
+              <div key={index} className="relative aspect-square overflow-hidden rounded-xl  shadow-lg transition-transform hover:scale-105">
+                <Image
+                  src={src}
+                  alt={`Featured NFT ${index + 1}`}
+                  layout="fill"
+                  objectFit="contain"
+                  className="transition-opacity hover:opacity-80"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
