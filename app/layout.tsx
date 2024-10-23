@@ -5,6 +5,8 @@ import { Providers } from "./providers";
 import '@rainbow-me/rainbowkit/styles.css';
 import { ThemeProvider } from "./theme-provider"
 import { Fredoka } from "next/font/google"
+// import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 
 const fredoka = Fredoka({ subsets: ['latin'] })
 
@@ -40,7 +42,11 @@ export default function RootLayout({
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
-          >{children}
+          >
+            {/* <nav className='flex justify-end p-4'>
+              <ConnectButton />
+            </nav> */}
+            {children}
         </ThemeProvider>
         </Providers>
       </body>
