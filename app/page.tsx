@@ -8,6 +8,7 @@ import LandingPageFeaturesSection from '@/components/LandingPageFeaturesSection'
 import Link from 'next/link';
 import LandingPageFooter from '@/components/LandingPageFooter';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 
 export default function Home() {
@@ -44,7 +45,10 @@ export default function Home() {
           <Link href={"/"} >
               <span className="font-bold text-white text-3xl tracking-wider ms-4">CartooNFT</span>
           </Link>
-          <ThemeToggle />
+          <div className='flex space-x-4'>
+            <ConnectButton />
+            <ThemeToggle />
+          </div>
         </div>
         <LandingPageHeroSection />
       </div>

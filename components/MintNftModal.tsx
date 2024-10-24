@@ -1,3 +1,5 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
@@ -12,11 +14,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { PlusCircle, Upload } from "lucide-react"
 import { Card, CardContent } from './ui/card'
 import Image from 'next/image'
+import { pinata } from '@/lib/pinataConfig'
+import { useReadContract, useWriteContract } from 'wagmi'
+import { BASIC_NFT_CONTRACT_ADDRESS, basicNftAbi, IPFS_BASE_URL, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
+import axios from 'axios'
+import { uploadNftToIpfs } from '@/actions/pinataActions'
 
 export default function MintNftModal({nfts, setNfts}: {nfts: any, setNfts: (nfts: any[]) => void}) {
   const [name, setName] = React.useState('')
@@ -24,6 +30,67 @@ export default function MintNftModal({nfts, setNfts}: {nfts: any, setNfts: (nfts
   const [image, setImage] = React.useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
   const [open, setOpen] = React.useState(false)
+  const [uploading, setUploading] = React.useState(false)
+  const [uploadedImageUrl, setUploadedImageUrl] = React.useState('')
+  const { writeContract } = useWriteContract()
+  const [url, setUrl] = React.useState("")
+
+
+  const uploadFile = async () => {
+    if (!image) {
+      alert("No file selected");
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const keyRequest = await fetch("/api/key");
+      const keyData = await keyRequest.json();
+      const upload = await pinata.upload.file(image).key(keyData.JWT);
+      console.log(upload);
+      setUploading(false);
+      const ipfsHash =  upload.IpfsHash;
+      return `${IPFS_BASE_URL}/${ipfsHash}`
+    } catch (e) {
+      console.log(e);
+      setUploading(false);
+      console.log("Trouble uploading file");
+    }
+  };
+
+  const uploadNft = async() => {
+    const imgUrl = await uploadFile()
+    const nftUrl = await uploadNftToIpfs(imgUrl as string, name) 
+    return nftUrl
+  }
+
+
+
+  const basicNftAddress: `0x${string}` = useReadContract({
+    abi: marketPlaceAbi,
+    address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+    functionName: 'getBasicNftContractAddress'
+  }).data as `0x${string}`
+
+  const mintNft = async(tokenUri: string, price: any) => {
+    writeContract({
+      abi: basicNftAbi,
+      functionName: 'mintNft',
+      args: [tokenUri, price],
+      address: basicNftAddress
+    })
+  }
+
+  const totalNftsCreated = useReadContract({
+    abi: basicNftAbi,
+    address: basicNftAddress,
+    functionName: 'getTotalNftsCreated'
+  }).data
+
+  // console.log("NFT address: ", basicNftAddress)
+  // console.log("Total NFTs created: ", totalNftsCreated)
+
+  
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -157,10 +224,12 @@ export default function MintNftModal({nfts, setNfts}: {nfts: any, setNfts: (nfts
           <DialogFooter>
             <Button type="submit" 
             onClick={
-                    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => 
+                    async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => 
                     {
                         e.preventDefault();
-                        setNfts([...nfts, {id: nfts.length + 1, name: name, price: price, image: previewUrl}])
+                        // setNfts([...nfts, {id: nfts.length + 1, name: name, price: price, image: previewUrl}])
+                        const nftUrl = await uploadNft();
+                        await mintNft(nftUrl as string, price)
                         setOpen(false)
                     }
                 }
