@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
@@ -31,18 +32,26 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
 import MintNftModal from '@/components/MintNftModal'
+import NftCard from '@/components/NftCard'
+import { useReadContract, useWriteContract, useSimulateContract } from 'wagmi'
+import { BASIC_NFT_CONTRACT_ADDRESS, basicNftAbi, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
+import { useQueryClient } from '@tanstack/react-query'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+
 
 
 export default function Dashboard() {
-  const Nfts = [
-    { id: 1, name: "Cosmic Voyager #1", price: "0.5 ETH", image: "/6.svg" },
-    { id: 2, name: "Digital Dream #42", price: "0.7 ETH", image: "/7.svg" },
-    { id: 3, name: "Neon Nebula #7", price: "0.3 ETH", image: "/8.svg" },
-    { id: 4, name: "Pixel Paradise #13", price: "0.6 ETH", image: "/9.svg" },
-    { id: 5, name: "Ethereal Echo #21", price: "0.4 ETH", image: "/10.svg" },
-  ]
+  // const Nfts = [
+  //   { id: 1, name: "Cosmic Voyager #1", price: "0.5 ETH", image: "/6.svg" },
+  //   { id: 2, name: "Digital Dream #42", price: "0.7 ETH", image: "/7.svg" },
+  //   { id: 3, name: "Neon Nebula #7", price: "0.3 ETH", image: "/8.svg" },
+  //   { id: 4, name: "Pixel Paradise #13", price: "0.6 ETH", image: "/9.svg" },
+  //   { id: 5, name: "Ethereal Echo #21", price: "0.4 ETH", image: "/10.svg" },
+  // ]
 
-  const [nfts, setNfts] = React.useState(Nfts)
+  // const [nfts, setNfts] = React.useState()
+
+  // setNfts(nfts)
   
   interface NFT {
     id: number
@@ -64,8 +73,38 @@ export default function Dashboard() {
     setIsModalOpen(false)
   }
 
+  const basicNftAddress: `0x${string}` = useReadContract({
+    abi: marketPlaceAbi,
+    address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+    functionName: 'getBasicNftContractAddress'
+  }).data as `0x${string}`
+
+  console.log("Basic Nft address: ", basicNftAddress)
 
   const {address} = useAccount()
+
+  const queryClient = useQueryClient()
+  const response = useReadContract({
+    abi: basicNftAbi,
+    address: basicNftAddress,
+    functionName: 'getMyNfts',
+    // args: [BigInt(0)]
+    account: address
+  })
+
+  const Nfts = response.data
+
+
+  console.log("Nfts: ", Nfts)
+
+  // React.useEffect(() => {
+
+  //   queryClient.invalidateQueries({ queryKey })
+
+  // }, [nfts, queryClient])
+
+  // console.log("My NFTs: ",nfts)
+
 
   return (
     <SidebarProvider>
@@ -121,32 +160,34 @@ export default function Dashboard() {
                 </div>
               </form>
             </div>
+            <ConnectButton />
             <ThemeToggle />
           </header>
           <main className="flex-1 overflow-y-auto w-full p-6">
             <h1 className="mb-8 text-2xl font-bold">My NFTs</h1>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {nfts.map((nft) => (
-                <Card key={nft.id} className="overflow-hidden border-none hover:bg-secondary hover:cursor-pointer p-2">
-                  <CardHeader className="p-0">
-                  <div className="group relative w-64 h-64 overflow-hidden">
-                    <Image
-                      src={nft.image}
-                      alt={nft.name}
-                      width={50}
-                      height={50}
-                      className="h-48 w-full object-contain transition-transform duration-300 ease-in-out transform group-hover:scale-110"
-                    />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="px-4 py-2 flex flex-col space-y-1">
-                    <CardTitle>{nft.name}</CardTitle>
-                    <p className="text-sm text-gray-500">{nft.price}</p>
-                  </CardContent>
-                  <CardFooter className="p-4">
-                    <Button className="w-full" onClick={() => openModal(nft)}>View Details</Button>
-                  </CardFooter>
-                </Card>
+              {Nfts?.map( (nft) => (
+                // <Card key={nft.id} className="overflow-hidden border-none hover:bg-secondary hover:cursor-pointer p-2">
+                //   <CardHeader className="p-0">
+                //   <div className="group relative w-64 h-64 overflow-hidden">
+                //     <Image
+                //       src={nft.image}
+                //       alt={nft.name}
+                //       width={50}
+                //       height={50}
+                //       className="h-48 w-full object-contain transition-transform duration-300 ease-in-out transform group-hover:scale-110"
+                //     />
+                //     </div>
+                //   </CardHeader>
+                //   <CardContent className="px-4 py-2 flex flex-col space-y-1">
+                //     <CardTitle>{nft.name}</CardTitle>
+                //     <p className="text-sm text-gray-500">{nft.price}</p>
+                //   </CardContent>
+                //   <CardFooter className="p-4">
+                //     <Button className="w-full" onClick={() => openModal(nft)}>View Details</Button>
+                //   </CardFooter>
+                // </Card>
+                <NftCard nft={nft}/>
               ))}
               {/* <Card className="flex items-center justify-center">
                 <CardContent>
@@ -161,12 +202,14 @@ export default function Dashboard() {
                   </Button>
                 </CardContent>
               </Card> */}
-              <MintNftModal nfts={nfts} setNfts={setNfts} />
+              <MintNftModal nfts={Nfts} 
+              // setNfts={setNfts} 
+              />
             </div>
           </main>
         </SidebarInset>
       </div>
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      {/* <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{selectedNFT?.name}</DialogTitle>
@@ -192,7 +235,7 @@ export default function Dashboard() {
             </Button>
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </SidebarProvider>
   )
 }

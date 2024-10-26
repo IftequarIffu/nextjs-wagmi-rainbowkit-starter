@@ -19,12 +19,12 @@ import { PlusCircle, Upload } from "lucide-react"
 import { Card, CardContent } from './ui/card'
 import Image from 'next/image'
 import { pinata } from '@/lib/pinataConfig'
-import { useReadContract, useWriteContract } from 'wagmi'
+import { useReadContract, useWriteContract, useSimulateContract, useAccount } from 'wagmi'
 import { BASIC_NFT_CONTRACT_ADDRESS, basicNftAbi, IPFS_BASE_URL, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
 import axios from 'axios'
 import { uploadNftToIpfs } from '@/actions/pinataActions'
 
-export default function MintNftModal({nfts, setNfts}: {nfts: any, setNfts: (nfts: any[]) => void}) {
+export default function MintNftModal({nfts}: {nfts: any}) {
   const [name, setName] = React.useState('')
   const [price, setPrice] = React.useState('')
   const [image, setImage] = React.useState<File | null>(null)
@@ -32,8 +32,8 @@ export default function MintNftModal({nfts, setNfts}: {nfts: any, setNfts: (nfts
   const [open, setOpen] = React.useState(false)
   const [uploading, setUploading] = React.useState(false)
   const [uploadedImageUrl, setUploadedImageUrl] = React.useState('')
-  const { writeContract } = useWriteContract()
-  const [url, setUrl] = React.useState("")
+  const { data: hash, writeContract } = useWriteContract()
+  const [nftUrl, setNftUrl] = React.useState("")
 
 
   const uploadFile = async () => {
@@ -61,6 +61,7 @@ export default function MintNftModal({nfts, setNfts}: {nfts: any, setNfts: (nfts
   const uploadNft = async() => {
     const imgUrl = await uploadFile()
     const nftUrl = await uploadNftToIpfs(imgUrl as string, name) 
+    setNftUrl(nftUrl as string)
     return nftUrl
   }
 
@@ -72,13 +73,25 @@ export default function MintNftModal({nfts, setNfts}: {nfts: any, setNfts: (nfts
     functionName: 'getBasicNftContractAddress'
   }).data as `0x${string}`
 
+  const {address} = useAccount()
+
+
   const mintNft = async(tokenUri: string, price: any) => {
-    writeContract({
-      abi: basicNftAbi,
-      functionName: 'mintNft',
-      args: [tokenUri, price],
-      address: basicNftAddress
-    })
+    console.log("Minting NFT...")
+    try {
+      writeContract({
+        abi: basicNftAbi,
+        functionName: 'mintNft',
+        args: [tokenUri, price],
+        address: basicNftAddress,
+        account: address
+      })
+      // writeContract(data?.request)
+      console.log("Minting NFT complete...")
+    } catch (error: any) {
+      console.log("Error while minting: ", error.message)
+    }
+    
   }
 
   const totalNftsCreated = useReadContract({
@@ -87,8 +100,8 @@ export default function MintNftModal({nfts, setNfts}: {nfts: any, setNfts: (nfts
     functionName: 'getTotalNftsCreated'
   }).data
 
-  // console.log("NFT address: ", basicNftAddress)
-  // console.log("Total NFTs created: ", totalNftsCreated)
+  console.log("Basic NFT contract address: ", basicNftAddress)
+  console.log("Total NFTs created: ", totalNftsCreated)
 
   
 
@@ -229,7 +242,8 @@ export default function MintNftModal({nfts, setNfts}: {nfts: any, setNfts: (nfts
                         e.preventDefault();
                         // setNfts([...nfts, {id: nfts.length + 1, name: name, price: price, image: previewUrl}])
                         const nftUrl = await uploadNft();
-                        await mintNft(nftUrl as string, price)
+                        await mintNft(nftUrl as string, price)  
+                        console.log("Tx Hash: ", hash)
                         setOpen(false)
                     }
                 }
