@@ -6,6 +6,9 @@ export const BASIC_NFT_CONTRACT_ADDRESS = "0x4D48DBe92a44bEDc942EeCff3967c9EadaE
 export const APP_NAME = "CartooNFT"
 export const IPFS_BASE_URL = 'https://ipfs.io/ipfs'
 
+export const categories = ['Pokemon', 'Tom & Jerry', 'Mickey Mouse', 'Bugs Bunny', 'Pink Panther', 'Dragon Ball Z', 'Naruto', 'Others']
+
+
 export const marketPlaceAbi = [
     {
         "type": "constructor",
@@ -182,6 +185,51 @@ export const basicNftAbi = [
                 "name": "",
                 "type": "address",
                 "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getListedNfts",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "tuple[]",
+                "internalType": "struct BasicNft.NFT[]",
+                "components": [
+                    {
+                        "name": "tokenId",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "isListed",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "isSold",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "price",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "tokenUri",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
+                        "name": "owner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ]
             }
         ],
         "stateMutability": "view"
@@ -477,6 +525,19 @@ export const basicNftAbi = [
                 "name": "approved",
                 "type": "bool",
                 "internalType": "bool"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "setIsListed",
+        "inputs": [
+            {
+                "name": "tokenId",
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
         "outputs": [],
