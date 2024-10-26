@@ -84,18 +84,25 @@ export default function Dashboard() {
   const {address} = useAccount()
 
   const queryClient = useQueryClient()
-  const response = useReadContract({
+  
+  const myNfts = useReadContract({
     abi: basicNftAbi,
     address: basicNftAddress,
     functionName: 'getMyNfts',
     // args: [BigInt(0)]
     account: address
-  })
+  }).data
 
-  const Nfts = response.data
+  const myLikedNfts = useReadContract({
+    abi: basicNftAbi,
+    address: basicNftAddress,
+    functionName: 'getMyLikedNfts',
+    // args: [BigInt(0)]
+    account: address
+  }).data
 
 
-  console.log("Nfts: ", Nfts)
+  // console.log("Nfts: ", Nfts)
 
   // React.useEffect(() => {
 
@@ -166,7 +173,7 @@ export default function Dashboard() {
           <main className="flex-1 overflow-y-auto w-full p-6">
             <h1 className="mb-8 text-2xl font-bold">My NFTs</h1>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {Nfts?.map( (nft) => (
+              {myNfts?.map( (nft) => (
                 // <Card key={nft.id} className="overflow-hidden border-none hover:bg-secondary hover:cursor-pointer p-2">
                 //   <CardHeader className="p-0">
                 //   <div className="group relative w-64 h-64 overflow-hidden">
@@ -202,7 +209,7 @@ export default function Dashboard() {
                   </Button>
                 </CardContent>
               </Card> */}
-              <MintNftModal nfts={Nfts} 
+              <MintNftModal nfts={myNfts} 
               // setNfts={setNfts} 
               />
             </div>

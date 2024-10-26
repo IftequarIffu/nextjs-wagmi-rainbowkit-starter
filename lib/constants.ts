@@ -236,6 +236,51 @@ export const basicNftAbi = [
     },
     {
         "type": "function",
+        "name": "getMyLikedNfts",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "tuple[]",
+                "internalType": "struct BasicNft.NFT[]",
+                "components": [
+                    {
+                        "name": "tokenId",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "isListed",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "isSold",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "price",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "tokenUri",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
+                        "name": "owner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ]
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
         "name": "getMyNfts",
         "inputs": [],
         "outputs": [
@@ -369,6 +414,19 @@ export const basicNftAbi = [
     },
     {
         "type": "function",
+        "name": "likeOrUnlikeAnNft",
+        "inputs": [
+            {
+                "name": "tokenId",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
         "name": "mintNft",
         "inputs": [
             {
@@ -411,6 +469,55 @@ export const basicNftAbi = [
         "outputs": [
             {
                 "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "s_addressToLikedNfts",
+        "inputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "tokenId",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "isListed",
+                "type": "bool",
+                "internalType": "bool"
+            },
+            {
+                "name": "isSold",
+                "type": "bool",
+                "internalType": "bool"
+            },
+            {
+                "name": "price",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "tokenUri",
+                "type": "string",
+                "internalType": "string"
+            },
+            {
+                "name": "owner",
                 "type": "address",
                 "internalType": "address"
             }

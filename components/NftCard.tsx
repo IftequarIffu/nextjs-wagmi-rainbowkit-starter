@@ -10,10 +10,14 @@ import { DialogHeader } from './ui/dialog'
 import { useWriteContract, useReadContract, useAccount } from 'wagmi'
 import { basicNftAbi, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
 import { parseEther } from 'viem'
+import { Heart } from 'lucide-react';
+
 
 const NftCard = ({nft} : {nft: any}) => {
 
   const { data: hash, isPending, error,  writeContract } = useWriteContract()
+
+
 
   const {address} = useAccount()
 
@@ -77,6 +81,46 @@ const NftCard = ({nft} : {nft: any}) => {
     }
   }
 
+
+  const likeOrUnlikeNft = async(tokenId: number) => {
+    console.log("Liking NFT...")
+    console.log("Basic NFT contract address: ", basicNftAddress)
+    try {
+      writeContract({
+        abi: basicNftAbi,
+        functionName: 'likeOrUnlikeAnNft',
+        args: [BigInt(tokenId)],
+        address: basicNftAddress,
+        account: address,
+        //value: parseEther('1')
+      })
+      // writeContract(data?.request)
+      console.log("Liking NFT complete...")
+    } catch (error: any) {
+      console.log("Error while Liking: ", error.message)
+    }
+  }
+
+  const myLikedNfts = useReadContract({
+    abi: basicNftAbi,
+    address: basicNftAddress,
+    functionName: 'getMyLikedNfts',
+    // args: [BigInt(0)]
+    account: address
+  }).data
+
+  let isNftLiked = false;
+
+  if(myLikedNfts){
+    for (const nftItem of myLikedNfts) {
+      if(nftItem.tokenId == nft.tokenId){
+        isNftLiked = true;
+        break;
+      }
+    }
+  }
+  
+
   console.log("Errrrrror: ", error)
 
 
@@ -128,13 +172,21 @@ const NftCard = ({nft} : {nft: any}) => {
         />
         </div>
         </CardHeader>
-        <CardContent className="px-4 py-2 flex flex-col space-y-1">
-        <CardTitle>{nftName}</CardTitle>
-        <p className="text-sm text-gray-500">{Number(nft.price)/(10**18)} ETH</p>
+        <CardContent className="px-4 py-2 flex justify-between">
+          <div className='flex-col space-y-1'>
+            <CardTitle>{nftName}</CardTitle>
+            <p className="text-sm text-gray-500">{Number(nft.price)/(10**18)} ETH</p>
+          </div>
+          <Button onClick={() => likeOrUnlikeNft(nft.tokenId)} className='bg-dark hover:bg-none'>
+            {
+              isNftLiked ? (<Heart fill='red' strokeWidth={0} />) : (<Heart />)
+            }
+            
+          </Button>
         </CardContent>
         <CardFooter className="p-4">
         <Button className="w-full" 
-        onClick={() => openModal(nft)}
+          onClick={() => openModal(nft)}
         >View Details</Button>
         </CardFooter>
     </Card>
@@ -160,6 +212,9 @@ const NftCard = ({nft} : {nft: any}) => {
           <span className="font-bold">Price:</span>
           <span>{Number(Number(nft.price)/(10**18))} ETH</span>
         </div>
+        {
+          nft.isListed == true ? (<Button disabled>Listed</Button>) : (
+        
         <Button onClick={async() => {
           console.log(`Listing NFT: ${nftName}`)
           try {
@@ -171,6 +226,8 @@ const NftCard = ({nft} : {nft: any}) => {
         }} disabled={isPending}>
           List NFT
         </Button>
+        )
+      }
       </div>
     </DialogContent>
   </Dialog>

@@ -54,18 +54,27 @@ export default function Marketplace() {
     functionName: 'getBasicNftContractAddress'
   }).data as `0x${string}`
 
+  const myLikedNfts = useReadContract({
+    abi: basicNftAbi,
+    address: basicNftAddress,
+    functionName: 'getMyLikedNfts',
+    // args: [BigInt(0)]
+    account: address
+  }).data
 
-  const response = useReadContract({
+  console.log("My Liked NFTs: ", myLikedNfts)
+
+
+  const listedNfts = useReadContract({
     abi: basicNftAbi,
     address: basicNftAddress,
     functionName: 'getListedNfts',
     // args: [BigInt(0)]
     account: address
-  })
+  }).data
 
-  const Nfts = response.data
 
-  console.log("Listed NFTs: ", Nfts)
+  console.log("Listed NFTs: ", listedNfts)
 
   return (
     <div className="flex min-h-screen ">
@@ -135,7 +144,7 @@ export default function Marketplace() {
 
           {/* NFT Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Nfts?.map((nft: any) => (
+            {myLikedNfts?.map((nft: any) => (
             //   <Card key={nft.id} className="overflow-hidden">
             //     <CardHeader className="p-0">
             //       <div className="relative aspect-square">
@@ -164,7 +173,7 @@ export default function Marketplace() {
             //       </div>
             //     </CardFooter>
             //   </Card>
-            <NftCard nft={nft}/>
+            <NftCard key={nft.tokenId} nft={nft}/>
             ))}
           </div>
 
