@@ -20,6 +20,7 @@ export const config = getDefaultConfig({
     arbitrum,
     base,
     anvil,
+    sepolia,
     ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true' ? [sepolia] : []),
   ],
   ssr: true,
