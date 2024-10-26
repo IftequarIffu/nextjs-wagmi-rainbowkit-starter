@@ -23,6 +23,8 @@ import { useReadContract, useWriteContract, useSimulateContract, useAccount } fr
 import { BASIC_NFT_CONTRACT_ADDRESS, basicNftAbi, IPFS_BASE_URL, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
 import axios from 'axios'
 import { uploadNftToIpfs } from '@/actions/pinataActions'
+import { categories } from '@/lib/constants'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
 
 export default function MintNftModal({nfts}: {nfts: any}) {
   const [name, setName] = React.useState('')
@@ -32,8 +34,9 @@ export default function MintNftModal({nfts}: {nfts: any}) {
   const [open, setOpen] = React.useState(false)
   const [uploading, setUploading] = React.useState(false)
   const [uploadedImageUrl, setUploadedImageUrl] = React.useState('')
-  const { data: hash, writeContract } = useWriteContract()
+  const { data: hash, writeContract, writeContractAsync } = useWriteContract()
   const [nftUrl, setNftUrl] = React.useState("")
+  const [loading, setLoading] = React.useState(false)
 
 
   const uploadFile = async () => {
@@ -82,9 +85,9 @@ export default function MintNftModal({nfts}: {nfts: any}) {
       writeContract({
         abi: basicNftAbi,
         functionName: 'mintNft',
-        args: [tokenUri, price],
+        args: [tokenUri, BigInt(price*(10**18))],
         address: basicNftAddress,
-        account: address
+        account: address,
       })
       // writeContract(data?.request)
       console.log("Minting NFT complete...")
@@ -184,6 +187,31 @@ export default function MintNftModal({nfts}: {nfts: any}) {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="price" className="text-right">
+                Category
+              </Label>
+            <Select>
+              <SelectTrigger className="w-[277px]">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {/* <SelectLabel>Categories</SelectLabel> */}
+                  {
+                    categories.map((item) => (
+                      <SelectItem key={item} value={item}>{item}</SelectItem>
+                    ))
+                  }
+                  {/* <SelectItem value="apple">Apple</SelectItem>
+                  <SelectItem value="banana">Banana</SelectItem>
+                  <SelectItem value="blueberry">Blueberry</SelectItem>
+                  <SelectItem value="grapes">Grapes</SelectItem>
+                  <SelectItem value="pineapple">Pineapple</SelectItem> */}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="image" className="text-right">
                 Image
               </Label>
@@ -241,12 +269,15 @@ export default function MintNftModal({nfts}: {nfts: any}) {
                     {
                         e.preventDefault();
                         // setNfts([...nfts, {id: nfts.length + 1, name: name, price: price, image: previewUrl}])
+                        setLoading(true)
                         const nftUrl = await uploadNft();
-                        await mintNft(nftUrl as string, price)  
+                        await mintNft(nftUrl as string, price) 
+                        setLoading(false)
                         console.log("Tx Hash: ", hash)
                         setOpen(false)
                     }
                 }
+                disabled={loading}
                 >Save NFT</Button>
           </DialogFooter>
         </form>
