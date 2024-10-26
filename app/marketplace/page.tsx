@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import * as React from 'react'
@@ -11,10 +13,31 @@ import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Search, Filter, Heart } from 'lucide-react'
 import Image from 'next/image'
-
-const categories = ['Art', 'Music', 'Virtual Worlds', 'Trading Cards', 'Collectibles', 'Sports', 'Utility']
+import Link from 'next/link'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { useAccount, useReadContract } from 'wagmi'
+import { basicNftAbi, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
+import NftCard from '@/components/NftCard'
+import { categories } from '@/lib/constants'
+// const categories = ['Art', 'Music', 'Virtual Worlds', 'Trading Cards', 'Collectibles', 'Sports', 'Utility']
 
 export default function Marketplace() {
+
+    const {address} = useAccount()
+
+    let listingPrice = Number(useReadContract({
+        abi: marketPlaceAbi,
+        address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+        functionName: 'getListingPrice',
+        // args: [BigInt(0)]
+        account: address
+      }).data)
+
+    listingPrice = listingPrice/(10**18)
+    
+    console.log("Listing Price: ", listingPrice)
+
+
   const [nfts, setNfts] = React.useState([
     { id: 1, name: "Cosmic Voyager #1", price: "0.5 ETH", category: "Art", likes: 24, image: "/1.svg" },
     { id: 2, name: "Digital Dream #42", price: "0.7 ETH", category: "Music", likes: 18, image: "/2.svg" },
@@ -24,6 +47,25 @@ export default function Marketplace() {
     { id: 6, name: "Quantum Quasar #9", price: "0.8 ETH", category: "Collectibles", likes: 36, image: "/6.svg" },
     // Add more NFTs as needed
   ])
+
+  const basicNftAddress: `0x${string}` = useReadContract({
+    abi: marketPlaceAbi,
+    address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+    functionName: 'getBasicNftContractAddress'
+  }).data as `0x${string}`
+
+
+  const response = useReadContract({
+    abi: basicNftAbi,
+    address: basicNftAddress,
+    functionName: 'getListedNfts',
+    // args: [BigInt(0)]
+    account: address
+  })
+
+  const Nfts = response.data
+
+  console.log("Listed NFTs: ", Nfts)
 
   return (
     <div className="flex min-h-screen ">
@@ -60,7 +102,10 @@ export default function Marketplace() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <header className="flex flex-col sm:flex-row justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold mb-4 sm:mb-0">NFT Marketplace</h1>
+            <Link href={"/"}>
+                <h1 className="text-3xl font-bold mb-4 sm:mb-0">CartooNFT</h1>
+            </Link>
+            <p>Listing Price: {listingPrice}</p>
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -84,40 +129,42 @@ export default function Marketplace() {
               <Button variant="outline" size="icon">
                 <Filter className="h-4 w-4" />
               </Button>
+              <ThemeToggle />
             </div>
           </header>
 
           {/* NFT Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {nfts.map((nft) => (
-              <Card key={nft.id} className="overflow-hidden">
-                <CardHeader className="p-0">
-                  <div className="relative aspect-square">
-                    <Image
-                      src={nft.image}
-                      alt={nft.name}
-                      layout="fill"
-                      objectFit="contain"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4">
-                  <CardTitle className="text-lg">{nft.name}</CardTitle>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-sm text-gray-500">{nft.price}</span>
-                    <Badge>{nft.category}</Badge>
-                  </div>
-                </CardContent>
-                <CardFooter className="p-4 flex justify-between items-center">
-                  <Button variant="outline" size="sm">
-                    View Details
-                  </Button>
-                  <div className="flex items-center space-x-1">
-                    <Heart className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-500">{nft.likes}</span>
-                  </div>
-                </CardFooter>
-              </Card>
+            {Nfts?.map((nft: any) => (
+            //   <Card key={nft.id} className="overflow-hidden">
+            //     <CardHeader className="p-0">
+            //       <div className="relative aspect-square">
+            //         <Image
+            //           src={nft.image}
+            //           alt={nft.name}
+            //           layout="fill"
+            //           objectFit="contain"
+            //         />
+            //       </div>
+            //     </CardHeader>
+            //     <CardContent className="p-4">
+            //       <CardTitle className="text-lg">{nft.name}</CardTitle>
+            //       <div className="flex justify-between items-center mt-2">
+            //         <span className="text-sm text-gray-500">{nft.price}</span>
+            //         <Badge>{nft.category}</Badge>
+            //       </div>
+            //     </CardContent>
+            //     <CardFooter className="p-4 flex justify-between items-center">
+            //       <Button variant="outline" size="sm">
+            //         View Details
+            //       </Button>
+            //       <div className="flex items-center space-x-1">
+            //         <Heart className="h-4 w-4 text-gray-400" />
+            //         <span className="text-sm text-gray-500">{nft.likes}</span>
+            //       </div>
+            //     </CardFooter>
+            //   </Card>
+            <NftCard nft={nft}/>
             ))}
           </div>
 
