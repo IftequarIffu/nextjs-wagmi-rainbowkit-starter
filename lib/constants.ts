@@ -114,7 +114,7 @@ export const marketPlaceAbi = [
     }
 ] as const
 
-export const basicNftAbi = [
+export const basicNftAbi =  [
     {
         "type": "constructor",
         "inputs": [],
@@ -228,6 +228,11 @@ export const basicNftAbi = [
                         "name": "owner",
                         "type": "address",
                         "internalType": "address"
+                    },
+                    {
+                        "name": "category",
+                        "type": "string",
+                        "internalType": "string"
                     }
                 ]
             }
@@ -273,6 +278,11 @@ export const basicNftAbi = [
                         "name": "owner",
                         "type": "address",
                         "internalType": "address"
+                    },
+                    {
+                        "name": "category",
+                        "type": "string",
+                        "internalType": "string"
                     }
                 ]
             }
@@ -318,6 +328,11 @@ export const basicNftAbi = [
                         "name": "owner",
                         "type": "address",
                         "internalType": "address"
+                    },
+                    {
+                        "name": "category",
+                        "type": "string",
+                        "internalType": "string"
                     }
                 ]
             }
@@ -369,8 +384,32 @@ export const basicNftAbi = [
                         "name": "owner",
                         "type": "address",
                         "internalType": "address"
+                    },
+                    {
+                        "name": "category",
+                        "type": "string",
+                        "internalType": "string"
                     }
                 ]
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getNumberOfLikesOfAnNft",
+        "inputs": [
+            {
+                "name": "tokenId",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
         "stateMutability": "view"
@@ -438,6 +477,11 @@ export const basicNftAbi = [
                 "name": "price",
                 "type": "uint256",
                 "internalType": "uint256"
+            },
+            {
+                "name": "category",
+                "type": "string",
+                "internalType": "string"
             }
         ],
         "outputs": [],
@@ -520,6 +564,11 @@ export const basicNftAbi = [
                 "name": "owner",
                 "type": "address",
                 "internalType": "address"
+            },
+            {
+                "name": "category",
+                "type": "string",
+                "internalType": "string"
             }
         ],
         "stateMutability": "view"
@@ -564,6 +613,30 @@ export const basicNftAbi = [
                 "name": "owner",
                 "type": "address",
                 "internalType": "address"
+            },
+            {
+                "name": "category",
+                "type": "string",
+                "internalType": "string"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "s_tokenIdToNumberOfLikes",
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
         "stateMutability": "view"
