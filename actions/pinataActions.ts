@@ -5,10 +5,15 @@ import { pinata } from "@/lib/pinataConfig";
 export const uploadNftToIpfs = async(nftImgUrl: string, name: string) => {
 
 
+    if(nftImgUrl == "" || nftImgUrl == undefined || nftImgUrl == null) {
+      throw new Error("No NFT Image URL")
+    }
+
     try {
       const nftMetadata = {
         name: name,
-        image: nftImgUrl
+        image: nftImgUrl,
+        mintDate: new Date(),
       }
     //   const keyRequest = await fetch("/api/key");
     //   const keyData = await keyRequest.json();
