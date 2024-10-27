@@ -11,6 +11,8 @@ import { useWriteContract, useReadContract, useAccount } from 'wagmi'
 import { basicNftAbi, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
 import { parseEther } from 'viem'
 import { Heart } from 'lucide-react';
+import { Badge } from './ui/badge'
+import { timeAgo } from '@/lib/utils'
 
 
 const NftCard = ({nft} : {nft: any}) => {
@@ -62,6 +64,15 @@ const NftCard = ({nft} : {nft: any}) => {
     functionName: 'getBasicNftContractAddress'
   }).data as `0x${string}`
 
+  const numberOfLikes = Number(useReadContract({
+    abi: basicNftAbi,
+    address: basicNftAddress,
+    functionName: 'getNumberOfLikesOfAnNft',
+    args: [BigInt(nft.tokenId)]
+  }).data)
+
+  console.log("Number of Likes: ", numberOfLikes)
+
   const listNft = async(tokenId: number) => {
     console.log("Listing NFT...")
     console.log("Basic NFT contract address: ", basicNftAddress)
@@ -78,6 +89,25 @@ const NftCard = ({nft} : {nft: any}) => {
       console.log("Listing NFT complete...")
     } catch (error: any) {
       console.log("Error while listing: ", error.message)
+    }
+  }
+
+  const buyNft = async(tokenId: number, valueInEth: number) => {
+    console.log("Buying NFT...")
+    console.log("Basic NFT contract address: ", basicNftAddress)
+    try {
+      writeContract({
+        abi: basicNftAbi,
+        functionName: 'buyNft',
+        args: [BigInt(tokenId)],
+        address: basicNftAddress,
+        account: address,
+        value: parseEther(`${valueInEth}`)
+      })
+      // writeContract(data?.request)
+      console.log("Buying NFT complete...")
+    } catch (error: any) {
+      console.log("Error while buying: ", error.message)
     }
   }
 
@@ -128,12 +158,14 @@ const NftCard = ({nft} : {nft: any}) => {
 
     const [nftName, setNftName] = useState("")
     const [nftImageUrl, setNftImageUrl] = useState("")
+    const [nftMintDate, setNftMintDate] = useState("")
 
     const getNftDetailsFromTokenUri = async(tokenUri: string) => {
       const jsonData = await axios.get(tokenUri)
       return {
         name: jsonData.data.name,
-        imageUrl: jsonData.data.image
+        imageUrl: jsonData.data.image,
+        mintDate: jsonData.data.mintDate
       }
     }
 
@@ -143,6 +175,7 @@ const NftCard = ({nft} : {nft: any}) => {
         const data = await getNftDetailsFromTokenUri(nftTokenUri)
         setNftName(data.name)
         setNftImageUrl(data.imageUrl)
+        setNftMintDate(data.mintDate)
       }
       
       getDataFromIPFS()
@@ -162,6 +195,7 @@ const NftCard = ({nft} : {nft: any}) => {
     <Card key={Number(nft.tokenId)} className="overflow-hidden border-none hover:bg-secondary hover:cursor-pointer p-2">
         <CardHeader className="p-0">
         <div className="group relative w-64 h-64 overflow-hidden">
+          <h1>Minted {timeAgo(new Date(nftMintDate))}</h1>
         <Image
             src={nftImageUrl}
             alt={nftName}
@@ -177,17 +211,23 @@ const NftCard = ({nft} : {nft: any}) => {
             <CardTitle>{nftName}</CardTitle>
             <p className="text-sm text-gray-500">{Number(nft.price)/(10**18)} ETH</p>
           </div>
-          <Button onClick={() => likeOrUnlikeNft(nft.tokenId)} className='bg-dark hover:bg-none'>
-            {
-              isNftLiked ? (<Heart fill='red' strokeWidth={0} />) : (<Heart />)
-            }
-            
-          </Button>
+          <Badge className='rounded-3xl py-0 px-4'>{nft.category}</Badge>
         </CardContent>
         <CardFooter className="p-4">
-        <Button className="w-full" 
-          onClick={() => openModal(nft)}
-        >View Details</Button>
+        <div className='flex space-x-4 items-center w-full'>
+          <Button className="w-full" 
+            onClick={() => openModal(nft)}
+          >View Details</Button>
+
+            {
+              isNftLiked ? 
+              (<Heart fill='red' color='red' strokeWidth={0} size={36} onClick={() => likeOrUnlikeNft(nft.tokenId)} />) : 
+              (<Heart size={36}  color='red' onClick={() => likeOrUnlikeNft(nft.tokenId)} />)
+            }
+            {numberOfLikes}
+            
+        </div>
+        
         </CardFooter>
     </Card>
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -212,6 +252,7 @@ const NftCard = ({nft} : {nft: any}) => {
           <span className="font-bold">Price:</span>
           <span>{Number(Number(nft.price)/(10**18))} ETH</span>
         </div>
+        <div className='flex flex-col space-y-1'>
         {
           nft.isListed == true ? (<Button disabled>Listed</Button>) : (
         
@@ -226,8 +267,25 @@ const NftCard = ({nft} : {nft: any}) => {
         }} disabled={isPending}>
           List NFT
         </Button>
+        
         )
       }
+      {
+        nft.isListed == true && nft.isSold == false && (
+          <Button onClick={async() => {
+            console.log(`Buying NFT: ${nftName}`)
+            try {
+              await buyNft(Number(nft.tokenId), Number(nft.price)/(10**18))
+            } catch (error: any) {
+              console.log("Errorrrrrrrrrrr: ", error.message)
+            }
+  
+          }}>
+            Buy NFT
+        </Button>
+        )
+      }
+      </div>
       </div>
     </DialogContent>
   </Dialog>

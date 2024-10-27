@@ -37,6 +37,9 @@ export default function MintNftModal({nfts}: {nfts: any}) {
   const { data: hash, writeContract, writeContractAsync } = useWriteContract()
   const [nftUrl, setNftUrl] = React.useState("")
   const [loading, setLoading] = React.useState(false)
+  const [category, setCategory] = React.useState("")
+
+  console.log("Category: ", category)
 
 
   const uploadFile = async () => {
@@ -85,7 +88,7 @@ export default function MintNftModal({nfts}: {nfts: any}) {
       writeContract({
         abi: basicNftAbi,
         functionName: 'mintNft',
-        args: [tokenUri, BigInt(price*(10**18))],
+        args: [tokenUri, BigInt(price*(10**18)), category],
         address: basicNftAddress,
         account: address,
       })
@@ -190,7 +193,7 @@ export default function MintNftModal({nfts}: {nfts: any}) {
             <Label htmlFor="price" className="text-right">
                 Category
               </Label>
-            <Select>
+            <Select onValueChange={setCategory} required>
               <SelectTrigger className="w-[277px]">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
