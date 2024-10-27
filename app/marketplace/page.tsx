@@ -144,7 +144,7 @@ export default function Marketplace() {
 
           {/* NFT Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {myLikedNfts?.map((nft: any) => (
+            {listedNfts?.map((nft: any) => (
             //   <Card key={nft.id} className="overflow-hidden">
             //     <CardHeader className="p-0">
             //       <div className="relative aspect-square">
