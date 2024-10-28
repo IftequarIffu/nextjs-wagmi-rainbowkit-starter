@@ -106,11 +106,11 @@ const filteredNFTs = React.useMemo(() => {
 
       const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(nft.category)
       const priceMatch = Number(nft.price)/(10**18) >= priceRange[0] && Number(nft.price)/(10**18) <= priceRange[1]
-    //   const searchMatch = nft.name.toLowerCase().includes(searchQuery.toLowerCase())
+      const searchMatch = nft.name.toLowerCase().includes(searchQuery.toLowerCase())
     //   console.log("In filter: ", nft.category, nft.price, categoryMatch, priceMatch)
-      return categoryMatch && priceMatch
+      return categoryMatch && priceMatch && searchMatch
     })
-  }, [listedNfts, selectedCategories, priceRange])
+  }, [listedNfts, selectedCategories, priceRange, searchQuery])
 
 
   console.log("Listed NFTs: ", listedNfts)
@@ -179,6 +179,8 @@ const filteredNFTs = React.useMemo(() => {
                   type="search"
                   placeholder="Search NFTs..."
                   className="pl-10 w-full sm:w-64"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
                 />
               </div>
               <Select>

@@ -156,16 +156,16 @@ const NftCard = ({nft} : {nft: any}) => {
 
     const nftTokenUri = nft.tokenUri;
 
-    const [nftName, setNftName] = useState("")
+    // const [nftName, setNftName] = useState("")
     const [nftImageUrl, setNftImageUrl] = useState("")
-    const [nftMintDate, setNftMintDate] = useState("")
+    // const [nftMintDate, setNftMintDate] = useState("")
 
     const getNftDetailsFromTokenUri = async(tokenUri: string) => {
       const jsonData = await axios.get(tokenUri)
       return {
-        name: jsonData.data.name,
+        // name: jsonData.data.name,
         imageUrl: jsonData.data.image,
-        mintDate: jsonData.data.mintDate
+        // mintDate: jsonData.data.mintDate
       }
     }
 
@@ -173,9 +173,9 @@ const NftCard = ({nft} : {nft: any}) => {
       
       const getDataFromIPFS = async() => {
         const data = await getNftDetailsFromTokenUri(nftTokenUri)
-        setNftName(data.name)
+        // setNftName(data.name)
         setNftImageUrl(data.imageUrl)
-        setNftMintDate(data.mintDate)
+        // setNftMintDate(data.mintDate)
       }
       
       getDataFromIPFS()
@@ -195,10 +195,10 @@ const NftCard = ({nft} : {nft: any}) => {
     <Card key={Number(nft.tokenId)} className="overflow-hidden border-none hover:bg-secondary hover:cursor-pointer p-2">
         <CardHeader className="p-0">
         <div className="group relative w-64 h-64 overflow-hidden">
-          <h1>Minted {timeAgo(new Date(nftMintDate))}</h1>
+          <h1>Minted {timeAgo(new Date(nft.mintDate))}</h1>
         <Image
             src={nftImageUrl}
-            alt={nftName}
+            alt={nft.name}
             width={50}
             height={50}
             unoptimized
@@ -208,7 +208,7 @@ const NftCard = ({nft} : {nft: any}) => {
         </CardHeader>
         <CardContent className="px-4 py-2 flex justify-between">
           <div className='flex-col space-y-1'>
-            <CardTitle>{nftName}</CardTitle>
+            <CardTitle>{nft.name}</CardTitle>
             <p className="text-sm text-gray-500">{Number(nft.price)/(10**18)} ETH</p>
           </div>
           <Badge className='rounded-3xl py-0 px-4'>{nft.category}</Badge>
@@ -233,7 +233,7 @@ const NftCard = ({nft} : {nft: any}) => {
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>{nftName}</DialogTitle>
+        <DialogTitle>{nft.name}</DialogTitle>
         <DialogDescription>NFT Details</DialogDescription>
       </DialogHeader>
       <div className="grid gap-4 py-4">
@@ -241,7 +241,7 @@ const NftCard = ({nft} : {nft: any}) => {
           {selectedNFT && (
             <Image
               src={nftImageUrl}
-              alt={nftName}
+              alt={nft.name}
               unoptimized
               layout="fill"
               objectFit="contain"
@@ -257,7 +257,7 @@ const NftCard = ({nft} : {nft: any}) => {
           nft.isListed == true ? (<Button disabled>Listed</Button>) : (
         
         <Button onClick={async() => {
-          console.log(`Listing NFT: ${nftName}`)
+          console.log(`Listing NFT: ${nft.name}`)
           try {
             await listNft(Number(nft.tokenId))
           } catch (error: any) {
@@ -273,7 +273,7 @@ const NftCard = ({nft} : {nft: any}) => {
       {
         nft.isListed == true && nft.isSold == false && (
           <Button onClick={async() => {
-            console.log(`Buying NFT: ${nftName}`)
+            console.log(`Buying NFT: ${nft.name}`)
             try {
               await buyNft(Number(nft.tokenId), Number(nft.price)/(10**18))
             } catch (error: any) {

@@ -205,6 +205,11 @@ export const basicNftAbi =  [
                         "internalType": "uint256"
                     },
                     {
+                        "name": "name",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
                         "name": "isListed",
                         "type": "bool",
                         "internalType": "bool"
@@ -231,6 +236,11 @@ export const basicNftAbi =  [
                     },
                     {
                         "name": "category",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
+                        "name": "mintDate",
                         "type": "string",
                         "internalType": "string"
                     }
@@ -255,6 +265,11 @@ export const basicNftAbi =  [
                         "internalType": "uint256"
                     },
                     {
+                        "name": "name",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
                         "name": "isListed",
                         "type": "bool",
                         "internalType": "bool"
@@ -281,6 +296,11 @@ export const basicNftAbi =  [
                     },
                     {
                         "name": "category",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
+                        "name": "mintDate",
                         "type": "string",
                         "internalType": "string"
                     }
@@ -305,6 +325,11 @@ export const basicNftAbi =  [
                         "internalType": "uint256"
                     },
                     {
+                        "name": "name",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
                         "name": "isListed",
                         "type": "bool",
                         "internalType": "bool"
@@ -331,6 +356,11 @@ export const basicNftAbi =  [
                     },
                     {
                         "name": "category",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
+                        "name": "mintDate",
                         "type": "string",
                         "internalType": "string"
                     }
@@ -361,6 +391,11 @@ export const basicNftAbi =  [
                         "internalType": "uint256"
                     },
                     {
+                        "name": "name",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
                         "name": "isListed",
                         "type": "bool",
                         "internalType": "bool"
@@ -387,6 +422,11 @@ export const basicNftAbi =  [
                     },
                     {
                         "name": "category",
+                        "type": "string",
+                        "internalType": "string"
+                    },
+                    {
+                        "name": "mintDate",
                         "type": "string",
                         "internalType": "string"
                     }
@@ -474,12 +514,22 @@ export const basicNftAbi =  [
                 "internalType": "string"
             },
             {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+            },
+            {
                 "name": "price",
                 "type": "uint256",
                 "internalType": "uint256"
             },
             {
                 "name": "category",
+                "type": "string",
+                "internalType": "string"
+            },
+            {
+                "name": "mintDate",
                 "type": "string",
                 "internalType": "string"
             }
@@ -541,6 +591,11 @@ export const basicNftAbi =  [
                 "internalType": "uint256"
             },
             {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+            },
+            {
                 "name": "isListed",
                 "type": "bool",
                 "internalType": "bool"
@@ -567,6 +622,11 @@ export const basicNftAbi =  [
             },
             {
                 "name": "category",
+                "type": "string",
+                "internalType": "string"
+            },
+            {
+                "name": "mintDate",
                 "type": "string",
                 "internalType": "string"
             }
@@ -590,6 +650,11 @@ export const basicNftAbi =  [
                 "internalType": "uint256"
             },
             {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+            },
+            {
                 "name": "isListed",
                 "type": "bool",
                 "internalType": "bool"
@@ -616,6 +681,11 @@ export const basicNftAbi =  [
             },
             {
                 "name": "category",
+                "type": "string",
+                "internalType": "string"
+            },
+            {
+                "name": "mintDate",
                 "type": "string",
                 "internalType": "string"
             }

@@ -13,7 +13,6 @@ export const uploadNftToIpfs = async(nftImgUrl: string, name: string) => {
       const nftMetadata = {
         name: name,
         image: nftImgUrl,
-        mintDate: new Date(),
       }
     //   const keyRequest = await fetch("/api/key");
     //   const keyData = await keyRequest.json();

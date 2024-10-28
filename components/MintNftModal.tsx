@@ -88,7 +88,7 @@ export default function MintNftModal({nfts}: {nfts: any}) {
       writeContract({
         abi: basicNftAbi,
         functionName: 'mintNft',
-        args: [tokenUri, BigInt(price*(10**18)), category],
+        args: [tokenUri, name, BigInt(price*(10**18)), category, new Date().toString()],
         address: basicNftAddress,
         account: address,
       })
