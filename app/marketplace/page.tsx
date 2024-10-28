@@ -48,6 +48,29 @@ export default function Marketplace() {
     // Add more NFTs as needed
   ])
 
+  const [selectedCategories, setSelectedCategories] = React.useState<string[]>([])
+  const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 1])
+  const [searchQuery, setSearchQuery] = React.useState<string>('')
+
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    )
+  }
+
+  const handlePriceRangeChange = (newValues: number[]) => {
+    setPriceRange([newValues[0], newValues[1]])
+  }
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value)
+  }
+
+
+
   const basicNftAddress: `0x${string}` = useReadContract({
     abi: marketPlaceAbi,
     address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
@@ -73,8 +96,26 @@ export default function Marketplace() {
     account: address
   }).data
 
+//   const filteredNFTs = React.useMemo(() => {
+//     if (selectedCategories.length === 0) return listedNfts
+//     return listedNfts?.filter(nft => selectedCategories.includes(nft.category))
+//   }, [listedNfts, selectedCategories])
+
+const filteredNFTs = React.useMemo(() => {
+    return listedNfts?.filter(nft => {
+
+      const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(nft.category)
+      const priceMatch = Number(nft.price)/(10**18) >= priceRange[0] && Number(nft.price)/(10**18) <= priceRange[1]
+    //   const searchMatch = nft.name.toLowerCase().includes(searchQuery.toLowerCase())
+    //   console.log("In filter: ", nft.category, nft.price, categoryMatch, priceMatch)
+      return categoryMatch && priceMatch
+    })
+  }, [listedNfts, selectedCategories, priceRange])
+
 
   console.log("Listed NFTs: ", listedNfts)
+
+  console.log("Price Range: ", priceRange[0], priceRange[1])
 
   return (
     <div className="flex min-h-screen ">
@@ -84,14 +125,30 @@ export default function Marketplace() {
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium">Price Range</label>
-            <Slider defaultValue={[0, 100]} max={100} step={1} className="mt-2" />
+            {/* <Slider defaultValue={[0, 100]} max={100} step={1} className="mt-2" /> */}
+            <Slider
+                value={priceRange}
+                min={0}
+                max={1}
+                step={0.1}
+                className="mt-2"
+                onValueChange={handlePriceRangeChange}
+            />
+            <div className="flex justify-between mt-1">
+                <span className="text-sm">{priceRange[0]} ETH</span>
+                <span className="text-sm">{priceRange[1]} ETH</span>
+            </div>
           </div>
           <div>
             <label className="text-sm font-medium">Categories</label>
             <div className="mt-2 space-y-2">
               {categories.map((category) => (
                 <div key={category} className="flex items-center">
-                  <Checkbox id={category} />
+                  <Checkbox 
+                    id={category}
+                    checked={selectedCategories.includes(category)}
+                    onCheckedChange={() => handleCategoryChange(category)}
+                  />
                   <label htmlFor={category} className="ml-2 text-sm">{category}</label>
                 </div>
               ))}
@@ -144,7 +201,7 @@ export default function Marketplace() {
 
           {/* NFT Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {listedNfts?.map((nft: any) => (
+            {filteredNFTs?.map((nft: any) => (
             //   <Card key={nft.id} className="overflow-hidden">
             //     <CardHeader className="p-0">
             //       <div className="relative aspect-square">

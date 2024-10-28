@@ -84,7 +84,7 @@ export default function Dashboard() {
   const {address} = useAccount()
 
   const queryClient = useQueryClient()
-  
+
   const myNfts = useReadContract({
     abi: basicNftAbi,
     address: basicNftAddress,
@@ -92,6 +92,8 @@ export default function Dashboard() {
     // args: [BigInt(0)]
     account: address
   }).data
+
+  console.log("My NFTs: ", myNfts)
 
   const myLikedNfts = useReadContract({
     abi: basicNftAbi,

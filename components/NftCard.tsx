@@ -56,7 +56,7 @@ const NftCard = ({nft} : {nft: any}) => {
     account: address
   }).data)
 
-  listingPrice = listingPrice/(10**18)
+  listingPrice = Number(listingPrice/(10**18))
 
   const basicNftAddress: `0x${string}` = useReadContract({
     abi: marketPlaceAbi,
@@ -83,7 +83,7 @@ const NftCard = ({nft} : {nft: any}) => {
         args: [BigInt(tokenId)],
         address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
         account: address,
-        value: parseEther('1')
+        value: parseEther(`${listingPrice}`)
       })
       // writeContract(data?.request)
       console.log("Listing NFT complete...")
