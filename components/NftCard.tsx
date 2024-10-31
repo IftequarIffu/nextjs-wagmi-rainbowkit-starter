@@ -10,7 +10,7 @@ import { DialogHeader } from './ui/dialog'
 import { useWriteContract, useReadContract, useAccount } from 'wagmi'
 import { basicNftAbi, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
 import { parseEther } from 'viem'
-import { Heart } from 'lucide-react';
+import { CheckCircle2, Heart } from 'lucide-react';
 import { Badge } from './ui/badge'
 import { timeAgo } from '@/lib/utils'
 
@@ -64,14 +64,14 @@ const NftCard = ({nft} : {nft: any}) => {
     functionName: 'getBasicNftContractAddress'
   }).data as `0x${string}`
 
-  const numberOfLikes = Number(useReadContract({
-    abi: basicNftAbi,
-    address: basicNftAddress,
-    functionName: 'getNumberOfLikesOfAnNft',
-    args: [BigInt(nft.tokenId)]
-  }).data)
+  // const numberOfLikes = Number(useReadContract({
+  //   abi: basicNftAbi,
+  //   address: basicNftAddress,
+  //   functionName: 'getNumberOfLikesOfAnNft',
+  //   args: [BigInt(nft.tokenId)]
+  // }).data)
 
-  console.log("Number of Likes: ", numberOfLikes)
+  // console.log("Number of Likes: ", numberOfLikes)
 
   const listNft = async(tokenId: number) => {
     console.log("Listing NFT...")
@@ -195,7 +195,12 @@ const NftCard = ({nft} : {nft: any}) => {
     <Card key={Number(nft.tokenId)} className="overflow-hidden border-none hover:bg-secondary hover:cursor-pointer p-2">
         <CardHeader className="p-0">
         <div className="group relative w-64 h-64 overflow-hidden">
-          <h1>Minted {timeAgo(new Date(nft.mintDate))}</h1>
+          {/* <h1>Minted {timeAgo(new Date(nft.mintDate))}</h1> */}
+          {!nft.isSold && (
+            <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
+              <CheckCircle2 className="h-4 w-4" />
+            </div>
+          )}
         <Image
             src={nftImageUrl}
             alt={nft.name}
@@ -224,7 +229,7 @@ const NftCard = ({nft} : {nft: any}) => {
               (<Heart fill='red' color='red' strokeWidth={0} size={36} onClick={() => likeOrUnlikeNft(nft.tokenId)} />) : 
               (<Heart size={36}  color='red' onClick={() => likeOrUnlikeNft(nft.tokenId)} />)
             }
-            {numberOfLikes}
+            {Number(nft.numberOfLikes)}
             
         </div>
         

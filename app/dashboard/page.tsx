@@ -117,8 +117,8 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-full">
-        <Sidebar className='bg-background border-border'>
+      <div className="flex h-screen w-full ">
+        <Sidebar className=' border-border'>
           <SidebarHeader>
             <SidebarMenuButton size="lg">
               <div className="flex items-center space-x-2">

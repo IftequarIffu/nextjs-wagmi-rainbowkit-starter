@@ -243,6 +243,11 @@ export const basicNftAbi =  [
                         "name": "mintDate",
                         "type": "string",
                         "internalType": "string"
+                    },
+                    {
+                        "name": "numberOfLikes",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ]
             }
@@ -303,6 +308,11 @@ export const basicNftAbi =  [
                         "name": "mintDate",
                         "type": "string",
                         "internalType": "string"
+                    },
+                    {
+                        "name": "numberOfLikes",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ]
             }
@@ -363,6 +373,11 @@ export const basicNftAbi =  [
                         "name": "mintDate",
                         "type": "string",
                         "internalType": "string"
+                    },
+                    {
+                        "name": "numberOfLikes",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ]
             }
@@ -429,27 +444,13 @@ export const basicNftAbi =  [
                         "name": "mintDate",
                         "type": "string",
                         "internalType": "string"
+                    },
+                    {
+                        "name": "numberOfLikes",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ]
-            }
-        ],
-        "stateMutability": "view"
-    },
-    {
-        "type": "function",
-        "name": "getNumberOfLikesOfAnNft",
-        "inputs": [
-            {
-                "name": "tokenId",
-                "type": "uint256",
-                "internalType": "uint256"
-            }
-        ],
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256",
-                "internalType": "uint256"
             }
         ],
         "stateMutability": "view"
@@ -629,6 +630,11 @@ export const basicNftAbi =  [
                 "name": "mintDate",
                 "type": "string",
                 "internalType": "string"
+            },
+            {
+                "name": "numberOfLikes",
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
         "stateMutability": "view"
@@ -688,23 +694,9 @@ export const basicNftAbi =  [
                 "name": "mintDate",
                 "type": "string",
                 "internalType": "string"
-            }
-        ],
-        "stateMutability": "view"
-    },
-    {
-        "type": "function",
-        "name": "s_tokenIdToNumberOfLikes",
-        "inputs": [
+            },
             {
-                "name": "",
-                "type": "uint256",
-                "internalType": "uint256"
-            }
-        ],
-        "outputs": [
-            {
-                "name": "",
+                "name": "numberOfLikes",
                 "type": "uint256",
                 "internalType": "uint256"
             }

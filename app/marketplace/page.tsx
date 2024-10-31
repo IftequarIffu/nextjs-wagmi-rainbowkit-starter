@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
@@ -11,7 +12,7 @@ import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Search, Filter, Heart } from 'lucide-react'
+import { Search, Filter, Heart, ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -37,6 +38,21 @@ export default function Marketplace() {
     
     console.log("Listing Price: ", listingPrice)
 
+    const basicNftAddress: `0x${string}` = useReadContract({
+        abi: marketPlaceAbi,
+        address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+        functionName: 'getBasicNftContractAddress'
+      }).data as `0x${string}`
+
+    // const useNumberOfLikesOfAnNft = (tokenId: number) => {
+    //     return Number(useReadContract({
+    //     abi: basicNftAbi,
+    //     address: basicNftAddress,
+    //     functionName: 'getNumberOfLikesOfAnNft',
+    //     args: [BigInt(tokenId)]
+    //   }).data)
+    // }
+
 
   const [nfts, setNfts] = React.useState([
     { id: 1, name: "Cosmic Voyager #1", price: "0.5 ETH", category: "Art", likes: 24, image: "/1.svg" },
@@ -51,6 +67,14 @@ export default function Marketplace() {
   const [selectedCategories, setSelectedCategories] = React.useState<string[]>([])
   const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 1])
   const [searchQuery, setSearchQuery] = React.useState<string>('')
+  const [sortOption, setSortOption] = React.useState('recent')
+  const [notSoldNfts, setNotSoldNfts] = React.useState(false)
+
+  const [currentPage, setCurrentPage] = React.useState(1)
+  const itemsPerPage = 4
+
+  
+    
 
 
   const handleCategoryChange = (category: string) => {
@@ -69,13 +93,15 @@ export default function Marketplace() {
     setSearchQuery(event.target.value)
   }
 
+  const handleSortChange = (value: string) => {
+    setSortOption(value)
+  }
 
+  const handleNotSoldChange = (checked: boolean) => {
+    setNotSoldNfts(checked)
+    setCurrentPage(1)
+  }
 
-  const basicNftAddress: `0x${string}` = useReadContract({
-    abi: marketPlaceAbi,
-    address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
-    functionName: 'getBasicNftContractAddress'
-  }).data as `0x${string}`
 
   const myLikedNfts = useReadContract({
     abi: basicNftAbi,
@@ -102,15 +128,61 @@ export default function Marketplace() {
 //   }, [listedNfts, selectedCategories])
 
 const filteredNFTs = React.useMemo(() => {
-    return listedNfts?.filter(nft => {
+    const result = listedNfts?.filter(nft => {
 
       const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(nft.category)
       const priceMatch = Number(nft.price)/(10**18) >= priceRange[0] && Number(nft.price)/(10**18) <= priceRange[1]
       const searchMatch = nft.name.toLowerCase().includes(searchQuery.toLowerCase())
-    //   console.log("In filter: ", nft.category, nft.price, categoryMatch, priceMatch)
-      return categoryMatch && priceMatch && searchMatch
+      let sellStatusMatch = false;
+    //   if((notSoldNfts && !nft.isSold)) {
+    //     sellStatusMatch = true
+    //   }
+      
+      const notSoldMatch = !notSoldNfts || !nft.isSold   
+      console.log("Not Sold filter: ", notSoldMatch)
+      return categoryMatch && priceMatch && searchMatch && notSoldMatch
+    //   && sellStatusMatch
     })
-  }, [listedNfts, selectedCategories, priceRange, searchQuery])
+
+    switch (sortOption) {
+        case 'recent':
+          return result?.sort((a, b) => new Date(b.mintDate).getTime() - new Date(a.mintDate).getTime())
+        case 'price-low':
+          return result?.sort((a, b) => Number(a.price) - Number(b.price))
+        case 'price-high':
+          return result?.sort((a, b) => Number(b.price) - Number(a.price))
+        case 'likes':
+          return result?.sort((a, b) => Number(b.numberOfLikes) - Number(a.numberOfLikes))
+        default:
+          return result
+      }
+
+    // return result
+  }, [listedNfts, selectedCategories, priceRange, searchQuery, sortOption])
+
+  let totalPages = 0;
+  if(filteredNFTs?.length !== undefined && filteredNFTs?.length !=0 ){
+    totalPages = Math.ceil(filteredNFTs?.length / itemsPerPage)
+  }
+
+
+  const currentNFTs = filteredNFTs?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+    )
+
+    const goToPage = (page: number) => {
+        setCurrentPage(page)
+      }
+      
+      const goToPreviousPage = () => {
+        setCurrentPage(prev => Math.max(prev - 1, 1))
+      }
+      
+      const goToNextPage = () => {
+        setCurrentPage(prev => Math.min(prev + 1, totalPages))
+      }
+
 
 
   console.log("Listed NFTs: ", listedNfts)
@@ -156,8 +228,9 @@ const filteredNFTs = React.useMemo(() => {
           </div>
           <div>
             <label className="text-sm font-medium flex items-center justify-between">
-              Verified Only
-              <Switch />
+              Not Sold
+              <Switch checked={notSoldNfts}
+                onCheckedChange={handleNotSoldChange} />
             </label>
           </div>
         </div>
@@ -183,7 +256,7 @@ const filteredNFTs = React.useMemo(() => {
                   onChange={handleSearchChange}
                 />
               </div>
-              <Select>
+              <Select onValueChange={handleSortChange} value={sortOption}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -203,7 +276,7 @@ const filteredNFTs = React.useMemo(() => {
 
           {/* NFT Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredNFTs?.map((nft: any) => (
+            {currentNFTs?.map((nft: any) => (
             //   <Card key={nft.id} className="overflow-hidden">
             //     <CardHeader className="p-0">
             //       <div className="relative aspect-square">
@@ -237,13 +310,41 @@ const filteredNFTs = React.useMemo(() => {
           </div>
 
           {/* Pagination */}
-          <div className="mt-8 flex justify-center">
+          {/* <div className="mt-8 flex justify-center">
             <Button variant="outline" className="mx-1">Previous</Button>
             <Button variant="outline" className="mx-1">1</Button>
             <Button variant="outline" className="mx-1">2</Button>
             <Button variant="outline" className="mx-1">3</Button>
             <Button variant="outline" className="mx-1">Next</Button>
-          </div>
+          </div> */}
+          <div className="mt-8 flex justify-center items-center space-x-2">
+            <Button
+                variant="outline"
+                size="icon"
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+            >
+                <ChevronLeft  className="h-4 w-4" />
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                key={page}
+                variant={currentPage === page ? "default" : "outline"}
+                size="icon"
+                onClick={() => goToPage(page)}
+                >
+                {page}
+                </Button>
+            ))}
+            <Button
+                variant="outline"
+                size="icon"
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+            >
+                <ChevronRight className="h-4 w-4" />
+            </Button>
+            </div>
         </div>
       </main>
     </div>
