@@ -22,6 +22,7 @@ import NftCard from '@/components/NftCard'
 import { categories } from '@/lib/constants'
 import { config } from '@/lib/wagmiConfig'
 import { readContract } from '@wagmi/core'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 // const categories = ['Art', 'Music', 'Virtual Worlds', 'Trading Cards', 'Collectibles', 'Sports', 'Utility']
 
@@ -395,7 +396,9 @@ const filteredNFTTokenIds = React.useMemo(() => {
                 {/* <h1 className="text-3xl font-bold mb-4 sm:mb-0">CartooNFT</h1> */}
             </Link>
             {/* <p>Listing Price: {listingPrice}</p> */}
+            
             <div className="flex items-center space-x-4">
+            <ConnectButton accountStatus="full" chainStatus="none" showBalance={false} />
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <Input
@@ -417,15 +420,27 @@ const filteredNFTTokenIds = React.useMemo(() => {
                   <SelectItem value="likes">Most Liked</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline" size="icon">
+              {/* <ConnectButton /> */}
+              {/* <Button variant="outline" size="icon">
                 <Filter className="h-4 w-4" />
-              </Button>
+              </Button> */}
               <ThemeToggle />
             </div>
           </header>
 
           {/* NFT Grid */}
-          <h1 className="text-2xl font-bold mb-12">Marketplace</h1>
+          <h1 className="text-2xl font-bold mb-4">Marketplace</h1>
+
+          {/* <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Input
+              type="search"
+              placeholder="Search NFTs..."
+              className="pl-10 w-full sm:w-64"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </div> */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           
             {currentNFTsTokenIds?.map((tokenId: any) => (

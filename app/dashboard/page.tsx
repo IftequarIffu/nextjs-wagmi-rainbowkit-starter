@@ -158,7 +158,7 @@ export default function Dashboard() {
                 </div> */}
               </form>
             </div>
-            <ConnectButton />
+            <ConnectButton chainStatus="full" />
             <ThemeToggle />
           </header>
           <main className="flex-1 overflow-y-auto w-full p-6">

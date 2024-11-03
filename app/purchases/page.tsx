@@ -66,16 +66,21 @@ export default function Favorites() {
   const {address} = useAccount()
 
 
-  const {data: myNfts, queryKey: readContractsQueryKey} = useReadContract({
+  const {data: myPurchasedNftsTokenIds, queryKey: getMyPurchasedNftsQueryKey} = useReadContract({
     abi: basicNftAbi,
     address: basicNftAddress,
-    functionName: 'getMyNfts',
+    functionName: 'getMyPurchasedNftsTokenIds',
+    // args: [BigInt(0)]
     account: address
   })
 
-  const purchasedNfts = myNfts?.filter((nft) => {
-    return nft.isSold && nft.owner == address
-  })
+  console.log("My Purchases TokenIDs: ", myPurchasedNftsTokenIds)
+
+
+
+  // const purchasedNfts = myNfts?.filter((nft) => {
+  //   return nft.isSold && nft.owner == address
+  // })
 
 
 
@@ -102,16 +107,16 @@ export default function Favorites() {
           </header>
           <main className="flex-1 overflow-y-auto w-full p-6">
             {
-                purchasedNfts == undefined || purchasedNfts?.length == 0 ? (<div className='flex justify-center items-center mt-36 text-3xl'>No Purchases yet!!!</div> ) :
+                myPurchasedNftsTokenIds == undefined || myPurchasedNftsTokenIds?.length == 0 ? (<div className='flex justify-center items-center mt-36 text-3xl'>No Purchases yet!!!</div> ) :
                 (
                     <>
                     <h1 className="mb-8 text-2xl font-bold">My Purchases</h1>
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     
 
-                    {purchasedNfts?.map( (nft) => (
+                    {myPurchasedNftsTokenIds?.map( (tokenId) => (
                         
-                        <NftCard nft={nft}/>
+                        <NftCard nftsTokenId={tokenId}/>
                     ))}
 
                     </div>

@@ -83,7 +83,7 @@ export default function MyLikedNfts() {
 
   console.log("My Favorites: ", myLikedNftsTokenIds)
 
-  const itemsPerPage = 3
+  const itemsPerPage = 4
   let totalPages = 0;
 
   if(myLikedNftsTokenIds?.length !== undefined && myLikedNftsTokenIds?.length !=0 ){
