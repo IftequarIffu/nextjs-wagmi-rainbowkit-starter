@@ -6,7 +6,6 @@ import { WagmiProvider } from 'wagmi';
 import { darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 
 import { config } from '../lib/wagmiConfig';
-// import { AppContextProvider } from '@/context/AppContext';
 
 export const queryClient = new QueryClient();
 
@@ -14,9 +13,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        {/* <AppContextProvider> */}
           <RainbowKitProvider theme={
-            // darkTheme()
             darkTheme({
               accentColor: '#26875a',
               accentColorForeground: 'white',
@@ -25,7 +22,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
               overlayBlur: 'small',
             })
             }>{children}</RainbowKitProvider>
-        {/* </AppContextProvider> */}
       </QueryClientProvider>
     </WagmiProvider>
   );
