@@ -8,7 +8,6 @@ import {
   sepolia,
   anvil
 } from 'wagmi/chains';
-// import { WALLETCONNECT_PROJECT_ID } from './constants';
 
 export const config = getDefaultConfig({
   appName: 'Iffu Dapps',
