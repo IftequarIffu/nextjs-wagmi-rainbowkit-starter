@@ -6,7 +6,7 @@ import * as React from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { PlusCircle, LayoutDashboard, ShoppingBag, Search, X, Heart, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react"
+import { PlusCircle, LayoutDashboard, ShoppingBag, Search, X, Heart, ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -23,28 +23,17 @@ import {
 } from '@/components/ui/sidebar'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { useAccount } from 'wagmi';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
 import MintNftModal from '@/components/MintNftModal'
 import NftCard from '@/components/NftCard'
 import { useReadContract, useWriteContract, useSimulateContract } from 'wagmi'
 import { BASIC_NFT_CONTRACT_ADDRESS, basicNftAbi, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
-import { QueryKey, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import DashboardPagesSidebarProvider from '@/components/DashboardPagesSidebarProvider'
-// import { useAppContext } from '@/context/AppContext'
 
 
 
-export default function Dashboard() {
-  
-  // const {basicNftContractAddress, myNfts, getMyNftsQueryKey} = useAppContext()
+export default function MyLikedNfts() {
   
   interface NFT {
     id: number
@@ -72,54 +61,38 @@ export default function Dashboard() {
     functionName: 'getBasicNftContractAddress'
   }).data as `0x${string}`
 
-  console.log("Basic Nft address in Dashboard: ", basicNftAddress)
+  console.log("Basic Nft address: ", basicNftAddress)
 
   const {address} = useAccount()
 
-  console.log("Address in Dashboard: ", address)
 
+  // const {data: myFavorites, queryKey: getMyLikedNftsQueryKey}  = useReadContract({
+  //   abi: basicNftAbi,
+  //   address: basicNftAddress,
+  //   functionName: 'getMyLikedNfts',
+  //   account: address
+  // })
 
-  const {data: myNftsTokenIds, queryKey: getMyNftsQueryKey} = useReadContract({
+  const {data: myLikedNftsTokenIds, queryKey: getMyLikedNftsTokenIdsQueryKey} = useReadContract({
     abi: basicNftAbi,
     address: basicNftAddress,
-    functionName: 'getMyNftsTokenIds',
+    functionName: 'getMyLikedNftsTokenIds',
     // args: [BigInt(0)]
     account: address
   })
 
-  console.log("My NFTs token Ids in Dashboard: ", myNftsTokenIds)
-
-  // const myLikedNfts = useReadContract({
-  //   abi: basicNftAbi,
-  //   address: basicNftAddress,
-  //   functionName: 'getMyLikedNfts',
-  //   // args: [BigInt(0)]
-  //   account: address
-  // }).data
-
-
-  // console.log("Nfts: ", Nfts)
-
-  // React.useEffect(() => {
-
-  //   queryClient.invalidateQueries({ queryKey })
-
-  // }, [nfts, queryClient])
-
-  // console.log("My NFTs: ",nfts)
-
-
+  console.log("My Favorites: ", myLikedNftsTokenIds)
 
   const itemsPerPage = 3
   let totalPages = 0;
 
-  if(myNftsTokenIds?.length !== undefined && myNftsTokenIds?.length !=0 ){
-    totalPages = Math.ceil(myNftsTokenIds?.length / itemsPerPage)
+  if(myLikedNftsTokenIds?.length !== undefined && myLikedNftsTokenIds?.length !=0 ){
+    totalPages = Math.ceil(myLikedNftsTokenIds?.length / itemsPerPage)
   }
 
   const [currentPage, setCurrentPage] = React.useState(1)
 
-  const currentNFTsTokenIds = myNftsTokenIds?.slice(
+  const currentNFTsTokenIds = myLikedNftsTokenIds?.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
     )
@@ -140,9 +113,7 @@ export default function Dashboard() {
 
 
   return (
-   
-      <DashboardPagesSidebarProvider>
-
+    <DashboardPagesSidebarProvider>
         <SidebarInset className="flex flex-col flex-grow w-full">
           <header className="flex h-16 items-center gap-4 border-border px-6 w-full">
             <SidebarTrigger />
@@ -162,12 +133,11 @@ export default function Dashboard() {
             <ThemeToggle />
           </header>
           <main className="flex-1 overflow-y-auto w-full p-6">
-            <h1 className="mb-8 text-2xl font-bold">My NFTs</h1>
+            <h1 className="mb-8 text-2xl font-bold">My Favorites</h1>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               
-              <MintNftModal nftsTokenIds={myNftsTokenIds} queryKey={getMyNftsQueryKey as QueryKey} />
 
-              {currentNFTsTokenIds?.map( (tokenId) => (
+              {myLikedNftsTokenIds?.map((tokenId) => (
                 
                 <NftCard nftsTokenId={tokenId}/>
               ))}
@@ -203,13 +173,8 @@ export default function Dashboard() {
                 <ChevronRight className="h-4 w-4" />
             </Button>
             </div>
-
           </main>
         </SidebarInset>
-      
-        
-
-      
     </DashboardPagesSidebarProvider>
   )
 }

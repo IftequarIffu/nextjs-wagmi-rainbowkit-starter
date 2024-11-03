@@ -6,6 +6,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 import { ThemeProvider } from "./theme-provider"
 import { Fredoka } from "next/font/google"
 import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
+import { Toaster } from "@/components/ui/toaster";
 // import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 
@@ -44,6 +45,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            {/* <Toaster /> */}
             {/* <nav className='flex justify-end p-4'>
               <ConnectButton />
             </nav> */}

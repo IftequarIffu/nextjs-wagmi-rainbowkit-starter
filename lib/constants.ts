@@ -191,195 +191,39 @@ export const basicNftAbi =  [
     },
     {
         "type": "function",
-        "name": "getListedNfts",
+        "name": "getListedNftsTokenIds",
         "inputs": [],
         "outputs": [
             {
                 "name": "",
-                "type": "tuple[]",
-                "internalType": "struct BasicNft.NFT[]",
-                "components": [
-                    {
-                        "name": "tokenId",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "name",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "isListed",
-                        "type": "bool",
-                        "internalType": "bool"
-                    },
-                    {
-                        "name": "isSold",
-                        "type": "bool",
-                        "internalType": "bool"
-                    },
-                    {
-                        "name": "price",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "tokenUri",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "owner",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "category",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "mintDate",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "numberOfLikes",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ]
+                "type": "uint256[]",
+                "internalType": "uint256[]"
             }
         ],
         "stateMutability": "view"
     },
     {
         "type": "function",
-        "name": "getMyLikedNfts",
+        "name": "getMyLikedNftsTokenIds",
         "inputs": [],
         "outputs": [
             {
                 "name": "",
-                "type": "tuple[]",
-                "internalType": "struct BasicNft.NFT[]",
-                "components": [
-                    {
-                        "name": "tokenId",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "name",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "isListed",
-                        "type": "bool",
-                        "internalType": "bool"
-                    },
-                    {
-                        "name": "isSold",
-                        "type": "bool",
-                        "internalType": "bool"
-                    },
-                    {
-                        "name": "price",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "tokenUri",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "owner",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "category",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "mintDate",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "numberOfLikes",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ]
+                "type": "uint256[]",
+                "internalType": "uint256[]"
             }
         ],
         "stateMutability": "view"
     },
     {
         "type": "function",
-        "name": "getMyNfts",
+        "name": "getMyNftsTokenIds",
         "inputs": [],
         "outputs": [
             {
                 "name": "",
-                "type": "tuple[]",
-                "internalType": "struct BasicNft.NFT[]",
-                "components": [
-                    {
-                        "name": "tokenId",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "name",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "isListed",
-                        "type": "bool",
-                        "internalType": "bool"
-                    },
-                    {
-                        "name": "isSold",
-                        "type": "bool",
-                        "internalType": "bool"
-                    },
-                    {
-                        "name": "price",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "tokenUri",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "owner",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "category",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "mintDate",
-                        "type": "string",
-                        "internalType": "string"
-                    },
-                    {
-                        "name": "numberOfLikes",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ]
+                "type": "uint256[]",
+                "internalType": "uint256[]"
             }
         ],
         "stateMutability": "view"
@@ -572,7 +416,7 @@ export const basicNftAbi =  [
     },
     {
         "type": "function",
-        "name": "s_addressToLikedNfts",
+        "name": "s_addressToLikedNftsTokenIds",
         "inputs": [
             {
                 "name": "",
@@ -587,52 +431,7 @@ export const basicNftAbi =  [
         ],
         "outputs": [
             {
-                "name": "tokenId",
-                "type": "uint256",
-                "internalType": "uint256"
-            },
-            {
-                "name": "name",
-                "type": "string",
-                "internalType": "string"
-            },
-            {
-                "name": "isListed",
-                "type": "bool",
-                "internalType": "bool"
-            },
-            {
-                "name": "isSold",
-                "type": "bool",
-                "internalType": "bool"
-            },
-            {
-                "name": "price",
-                "type": "uint256",
-                "internalType": "uint256"
-            },
-            {
-                "name": "tokenUri",
-                "type": "string",
-                "internalType": "string"
-            },
-            {
-                "name": "owner",
-                "type": "address",
-                "internalType": "address"
-            },
-            {
-                "name": "category",
-                "type": "string",
-                "internalType": "string"
-            },
-            {
-                "name": "mintDate",
-                "type": "string",
-                "internalType": "string"
-            },
-            {
-                "name": "numberOfLikes",
+                "name": "",
                 "type": "uint256",
                 "internalType": "uint256"
             }

@@ -6,14 +6,17 @@ import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 
 import { config } from '../lib/wagmiConfig';
+// import { AppContextProvider } from '@/context/AppContext';
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>{children}</RainbowKitProvider>
+        {/* <AppContextProvider> */}
+          <RainbowKitProvider>{children}</RainbowKitProvider>
+        {/* </AppContextProvider> */}
       </QueryClientProvider>
     </WagmiProvider>
   );

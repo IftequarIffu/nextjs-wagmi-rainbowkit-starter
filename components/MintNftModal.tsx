@@ -25,8 +25,15 @@ import axios from 'axios'
 import { uploadNftToIpfs } from '@/actions/pinataActions'
 import { categories } from '@/lib/constants'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
+import { NFTMintingProgress } from './NftMintingProgress'
+import { useTransactionReceipt } from 'wagmi'
+import { QueryKey, useQueryClient } from '@tanstack/react-query'
+import { queryClient } from '@/app/providers'
+import { Spinner } from './LoadingSpinner'
+// import { useAppContext } from '@/context/AppContext'
 
-export default function MintNftModal({nfts}: {nfts: any}) {
+
+export default function MintNftModal({nftsTokenIds, queryKey}: {nftsTokenIds: any, queryKey: QueryKey}) {
   const [name, setName] = React.useState('')
   const [price, setPrice] = React.useState('')
   const [image, setImage] = React.useState<File | null>(null)
@@ -34,12 +41,24 @@ export default function MintNftModal({nfts}: {nfts: any}) {
   const [open, setOpen] = React.useState(false)
   const [uploading, setUploading] = React.useState(false)
   const [uploadedImageUrl, setUploadedImageUrl] = React.useState('')
-  const { data: hash, writeContract, writeContractAsync } = useWriteContract()
+  const { data: mintNftHash, writeContract, isSuccess, error } = useWriteContract()
   const [nftUrl, setNftUrl] = React.useState("")
   const [loading, setLoading] = React.useState(false)
   const [category, setCategory] = React.useState("")
+  const [isMintingProgressOpen, setIsMintingProgressOpen] = React.useState(false)
+  const { isSuccess: isTxSuccess, isLoading: isTxLoading, isError: isTxErrored } = useTransactionReceipt({
+    hash: mintNftHash
+  })
+  // const {basicNftContractAddress, accountAddress} = useAppContext()
 
-  console.log("Category: ", category)
+
+
+  // const handleMintNFT = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  //   e.preventDefault();
+  //   setIsMintingProgressOpen(true)
+  // }
+
+  console.log("Errorrrrrr in MintNftModal: ", error)
 
 
   const uploadFile = async () => {
@@ -85,7 +104,7 @@ export default function MintNftModal({nfts}: {nfts: any}) {
   const mintNft = async(tokenUri: string, price: any) => {
     console.log("Minting NFT...")
     try {
-      writeContract({
+      const txHash = writeContract({
         abi: basicNftAbi,
         functionName: 'mintNft',
         args: [tokenUri, name, BigInt(price*(10**18)), category, new Date().toString()],
@@ -93,21 +112,23 @@ export default function MintNftModal({nfts}: {nfts: any}) {
         account: address,
       })
       // writeContract(data?.request)
-      console.log("Minting NFT complete...")
+      console.log("Minting NFT complete...", txHash)
+      console.log(error)
+
     } catch (error: any) {
       console.log("Error while minting: ", error.message)
     }
     
   }
 
-  const totalNftsCreated = useReadContract({
-    abi: basicNftAbi,
-    address: basicNftAddress,
-    functionName: 'getTotalNftsCreated'
-  }).data
+  // const totalNftsCreated = useReadContract({
+  //   abi: basicNftAbi,
+  //   address: basicNftAddress,
+  //   functionName: 'getTotalNftsCreated'
+  // }).data
 
-  console.log("Basic NFT contract address: ", basicNftAddress)
-  console.log("Total NFTs created: ", totalNftsCreated)
+  // console.log("Basic NFT contract address: ", basicNftAddress)
+  // console.log("Total NFTs created: ", totalNftsCreated)
 
   
 
@@ -118,6 +139,25 @@ export default function MintNftModal({nfts}: {nfts: any}) {
       setPreviewUrl(URL.createObjectURL(file))
     }
   }
+
+  // if(isTxSuccess) {
+  //   // setLoading(false)
+  //   setOpen(false)
+  //   queryClient.invalidateQueries({ queryKey: queryKey })
+  // }
+
+  // if(isTxSuccess || isTxErrored){
+  //   setOpen(false)
+  //   queryClient.invalidateQueries({ queryKey: queryKey })
+  // }
+
+  React.useEffect(() => {
+    if (isTxSuccess || isTxErrored) {
+      setLoading(false)
+      setOpen(false)
+      queryClient.invalidateQueries({ queryKey })
+    }
+  }, [isTxSuccess, isTxErrored, queryKey])
 
 //   const handleSubmit = (e: React.FormEvent) => {
 //     e.preventDefault()
@@ -133,6 +173,7 @@ export default function MintNftModal({nfts}: {nfts: any}) {
 //   }
 
   return (
+    <>
     <Dialog open={open} onOpenChange={setOpen}>
       {/* <DialogTrigger asChild> */}
         {/* <Button variant="outline">
@@ -268,6 +309,7 @@ export default function MintNftModal({nfts}: {nfts: any}) {
           <DialogFooter>
             <Button type="submit" 
             onClick={
+              // handleMintNFT
                     async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => 
                     {
                         e.preventDefault();
@@ -275,16 +317,34 @@ export default function MintNftModal({nfts}: {nfts: any}) {
                         setLoading(true)
                         const nftUrl = await uploadNft();
                         await mintNft(nftUrl as string, price) 
-                        setLoading(false)
-                        console.log("Tx Hash: ", hash)
-                        setOpen(false)
+                        // setLoading(false)
+                        // console.log("Tx Hash: ", hash)
+
+                        // try {
+                        //   await queryClient.invalidateQueries({ queryKey: readContractsQueryKey})
+                        //   console.log("Refetching done")
+                        // } catch (error) {
+                        //   console.log("Error while refetching")
+                        // }
+                        
                     }
+                    
                 }
                 disabled={loading}
-                >Save NFT</Button>
+                >
+                  {loading && <Spinner size="small" className='text-black'/>}
+                  Mint NFT
+                </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
+    {/* <NFTMintingProgress
+      isOpen={isMintingProgressOpen}
+      onOpenChange={setIsMintingProgressOpen}
+      onUploadToIPFS={uploadNft}
+      onMintNFT={async() => await mintNft(nftUrl, price)}
+    /> */}
+    </>
   )
 }

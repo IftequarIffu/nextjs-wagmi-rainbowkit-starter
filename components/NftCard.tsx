@@ -7,21 +7,43 @@ import Image from 'next/image'
 import axios from 'axios'
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from './ui/dialog'
 import { DialogHeader } from './ui/dialog'
-import { useWriteContract, useReadContract, useAccount } from 'wagmi'
+import { useWriteContract, useReadContract, useAccount, useTransactionReceipt } from 'wagmi'
 import { basicNftAbi, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
 import { parseEther } from 'viem'
 import { CheckCircle2, Heart } from 'lucide-react';
 import { Badge } from './ui/badge'
 import { timeAgo } from '@/lib/utils'
+import { useToast } from "@/hooks/use-toast"
+import { queryClient } from '@/app/providers'
+import { Spinner } from './LoadingSpinner'
 
 
-const NftCard = ({nft} : {nft: any}) => {
 
-  const { data: hash, isPending, error,  writeContract } = useWriteContract()
-
-
+const NftCard = ({nftsTokenId} : {nftsTokenId: any}) => {
 
   const {address} = useAccount()
+
+  const { data: listNftTxHash,  writeContract: listNftWriteContract } = useWriteContract()
+  const { data: likeOrUnlikeNftTxHash, error: likeOrUnlikeAnNftErrored,  writeContract: likeOrUnlikeNftWriteContract } = useWriteContract()
+  const { data: buyNftTxHash, writeContract: buyNftWriteContract } = useWriteContract()
+  const {toast} = useToast()
+
+
+  const { isSuccess: isListNftTxSuccess, isError: isListNftErrored } = useTransactionReceipt({
+    hash: listNftTxHash
+  })
+
+  const { isSuccess: isLikeOrUnlikeNftTxSuccess, isError: isLikeOrUnlikeNftErrored } = useTransactionReceipt({
+    hash: likeOrUnlikeNftTxHash
+  })
+
+  const { isSuccess: isBuyNftTxSuccess, isError: isBuyNftErrored } = useTransactionReceipt({
+    hash: buyNftTxHash
+  })
+
+  console.log("Like Or Unlike Errored: ", likeOrUnlikeAnNftErrored)
+
+  
 
   interface NFT {
     tokenId: number
@@ -32,7 +54,24 @@ const NftCard = ({nft} : {nft: any}) => {
     owner: string
   }
 
-  console.log("Nft: ", nft)
+  const basicNftAddress: `0x${string}` = useReadContract({
+    abi: marketPlaceAbi,
+    address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+    functionName: 'getBasicNftContractAddress'
+  }).data as `0x${string}`
+
+  console.log("Basic Nft Address in Nft Card: ", basicNftAddress)
+
+
+  const {data: nft, queryKey: getNftFromTokenIdQueryKey} = useReadContract({
+    abi: basicNftAbi,
+    address: basicNftAddress,
+    functionName: 'getNftFromTokenId',
+    args: [nftsTokenId],
+    account: address
+  })
+
+  console.log("Nft in NftCard: ", nft)
 
   const [selectedNFT, setSelectedNFT] = React.useState<NFT | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
@@ -58,26 +97,12 @@ const NftCard = ({nft} : {nft: any}) => {
 
   listingPrice = Number(listingPrice/(10**18))
 
-  const basicNftAddress: `0x${string}` = useReadContract({
-    abi: marketPlaceAbi,
-    address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
-    functionName: 'getBasicNftContractAddress'
-  }).data as `0x${string}`
-
-  // const numberOfLikes = Number(useReadContract({
-  //   abi: basicNftAbi,
-  //   address: basicNftAddress,
-  //   functionName: 'getNumberOfLikesOfAnNft',
-  //   args: [BigInt(nft.tokenId)]
-  // }).data)
-
-  // console.log("Number of Likes: ", numberOfLikes)
 
   const listNft = async(tokenId: number) => {
     console.log("Listing NFT...")
     console.log("Basic NFT contract address: ", basicNftAddress)
     try {
-      writeContract({
+      listNftWriteContract({
         abi: marketPlaceAbi,
         functionName: 'listNft',
         args: [BigInt(tokenId)],
@@ -96,7 +121,7 @@ const NftCard = ({nft} : {nft: any}) => {
     console.log("Buying NFT...")
     console.log("Basic NFT contract address: ", basicNftAddress)
     try {
-      writeContract({
+      buyNftWriteContract({
         abi: basicNftAbi,
         functionName: 'buyNft',
         args: [BigInt(tokenId)],
@@ -116,7 +141,7 @@ const NftCard = ({nft} : {nft: any}) => {
     console.log("Liking NFT...")
     console.log("Basic NFT contract address: ", basicNftAddress)
     try {
-      writeContract({
+      likeOrUnlikeNftWriteContract({
         abi: basicNftAbi,
         functionName: 'likeOrUnlikeAnNft',
         args: [BigInt(tokenId)],
@@ -124,6 +149,9 @@ const NftCard = ({nft} : {nft: any}) => {
         account: address,
         //value: parseEther('1')
       })
+      // setIsNftLiked((prev) => !prev)
+      // queryClient.invalidateQueries({queryKey: getMyLikedNftsQueryKey});
+      // queryClient.invalidateQueries({queryKey: getMyNftsQueryKey});
       // writeContract(data?.request)
       console.log("Liking NFT complete...")
     } catch (error: any) {
@@ -131,30 +159,108 @@ const NftCard = ({nft} : {nft: any}) => {
     }
   }
 
-  const myLikedNfts = useReadContract({
+  const {data: myNftsTokenIds, queryKey: getMyNftsTokenIdsQueryKey} = useReadContract({
     abi: basicNftAbi,
     address: basicNftAddress,
-    functionName: 'getMyLikedNfts',
+    functionName: 'getMyNftsTokenIds',
+    account: address
+  })
+
+
+  const {data: listedNftsTokenIds, queryKey: getListedNftsTokenIdsQueryKey} = useReadContract({
+    abi: basicNftAbi,
+    address: basicNftAddress,
+    functionName: 'getListedNftsTokenIds',
     // args: [BigInt(0)]
     account: address
-  }).data
+  })
 
-  let isNftLiked = false;
 
-  if(myLikedNfts){
-    for (const nftItem of myLikedNfts) {
-      if(nftItem.tokenId == nft.tokenId){
-        isNftLiked = true;
-        break;
+
+
+
+  const {data: myLikedNftsTokenIds, queryKey: getMyLikedNftsTokenIdsQueryKey} = useReadContract({
+    abi: basicNftAbi,
+    address: basicNftAddress,
+    functionName: 'getMyLikedNftsTokenIds',
+    // args: [BigInt(0)]
+    account: address
+  })
+
+  // let isNftLiked = false;
+
+  const [isNftLiked, setIsNftLiked] = useState<boolean | undefined>(false)
+
+  useEffect(() => {
+
+    if(isLikeOrUnlikeNftTxSuccess || isLikeOrUnlikeNftErrored) {
+      // setIsModalOpen(false)
+      // toast({
+      //   title: "Like or Unlike successful",
+      //   // description: "Friday, February 10, 2023 at 5:57 PM",
+      // })
+      // queryClient.invalidateQueries({ queryKey: getMyLikedNftsQueryKey })
+      // isNftLiked = !isNftLiked
+      // setIsNftLiked((prev) => !prev)
+      queryClient.invalidateQueries({ queryKey: getMyNftsTokenIdsQueryKey })
+      queryClient.invalidateQueries({ queryKey: getMyLikedNftsTokenIdsQueryKey })
+      queryClient.invalidateQueries({ queryKey: getNftFromTokenIdQueryKey })
+      setIsNftLiked(false)
+    }
+
+
+  }, [isLikeOrUnlikeNftTxSuccess, isLikeOrUnlikeNftErrored,  getMyLikedNftsTokenIdsQueryKey, getMyNftsTokenIdsQueryKey, getNftFromTokenIdQueryKey, toast])
+
+
+  useEffect(() => {
+    if(isListNftTxSuccess || isListNftErrored) {
+      queryClient.invalidateQueries({ queryKey: getMyNftsTokenIdsQueryKey })
+      queryClient.invalidateQueries({ queryKey: getNftFromTokenIdQueryKey })
+    }
+  }, [isListNftTxSuccess, isListNftErrored, getMyNftsTokenIdsQueryKey, getNftFromTokenIdQueryKey ])
+
+  // Use it later
+  useEffect(() => {
+    if(myLikedNftsTokenIds){
+      for (const tokenId of myLikedNftsTokenIds) {
+        if(tokenId == nftsTokenId){
+          setIsNftLiked(true)
+          // isNftLiked = true;
+          break;
+        }
       }
     }
-  }
+  }, [myLikedNftsTokenIds, nftsTokenId, isNftLiked, myNftsTokenIds])
   
 
-  console.log("Errrrrror: ", error)
+  // React.useEffect(() => {
+  //   if (isListNftTxHashSuccess || isLikeOrUnlikeNftTxHashSuccess || isBuyNftTxHashSuccess || isListNftErrored || isLikeOrUnlikeNftErrored || isBuyNftErrored) {
+  //     setOpen(false)
+  //     queryClient.invalidateQueries({ queryKey })
+  //   }
+  // }, [isListNftTxHashSuccess, isLikeOrUnlikeNftTxHashSuccess, isBuyNftTxHashSuccess, isListNftErrored, isLikeOrUnlikeNftErrored, isBuyNftErrored])
+  
+  
 
+  // console.log("Errrrrror: ", error)
 
-    const nftTokenUri = nft.tokenUri;
+  const [nftTokenUri, setNftTokenUri] = useState<string | undefined>()
+
+    useEffect(() => {
+
+      if(nft?.tokenUri) {
+        setNftTokenUri(nft?.tokenUri)
+      }
+
+    }, [nft])
+
+    
+
+    // if(nft) {
+    //   setNftTokenUri()
+    // }
+
+    // const nftTokenUri = nft?.tokenUri;
 
     // const [nftName, setNftName] = useState("")
     const [nftImageUrl, setNftImageUrl] = useState("")
@@ -168,68 +274,116 @@ const NftCard = ({nft} : {nft: any}) => {
         // mintDate: jsonData.data.mintDate
       }
     }
+    
 
     useEffect(() => {
-      
-      const getDataFromIPFS = async() => {
-        const data = await getNftDetailsFromTokenUri(nftTokenUri)
-        // setNftName(data.name)
-        setNftImageUrl(data.imageUrl)
-        // setNftMintDate(data.mintDate)
+
+      if(nftTokenUri) {
+
+        const getDataFromIPFS = async() => {
+          const data = await getNftDetailsFromTokenUri(nftTokenUri as string)
+          // setNftName(data.name)
+          setNftImageUrl(data.imageUrl)
+          // setNftMintDate(data.mintDate)
+        }
+        
+        getDataFromIPFS()
+
       }
       
-      getDataFromIPFS()
+      
 
-    }, [])
+    }, [nft, nftTokenUri])
 
     console.log("Image Url: ", nftImageUrl)
     console.log("Nft: ", nft)
 
-    if(nft.owner == "0x0000000000000000000000000000000000000000") {
+    
+
+    // if(isListNftTxSuccess) {
+    //   setIsModalOpen(false)
+    //   toast({
+    //     title: "Listing successful",
+    //     // description: "Friday, February 10, 2023 at 5:57 PM",
+    //   })
+    //   queryClient.invalidateQueries({ queryKey: getListedNftsQueryKey })
+    // }
+
+    
+    console.log("Number of Likes: ", nft?.numberOfLikes)
+  
+    
+
+    // if(isBuyNftTxSuccess) {
+    //   setIsModalOpen(false)
+    //   toast({
+    //     title: "Purchase successful",
+    //     // description: "Friday, February 10, 2023 at 5:57 PM",
+    //   })
+    //   queryClient.invalidateQueries({ queryKey: getMyNftsQueryKey })
+    // }
+
+
+    if(nft?.owner == "0x0000000000000000000000000000000000000000") {
       return null
     }
+
+
   
 
   return (
     <>
-    <Card key={Number(nft.tokenId)} className="overflow-hidden border-none hover:bg-secondary hover:cursor-pointer p-2">
+    <Card key={Number(nft?.tokenId)} className="overflow-hidden border-none hover:bg-secondary p-2">
         <CardHeader className="p-0">
         <div className="group relative w-64 h-64 overflow-hidden">
           {/* <h1>Minted {timeAgo(new Date(nft.mintDate))}</h1> */}
-          {!nft.isSold && (
+          {!nft?.isSold && (
             <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
+              
               <CheckCircle2 className="h-4 w-4" />
             </div>
           )}
-        <Image
-            src={nftImageUrl}
-            alt={nft.name}
-            width={50}
-            height={50}
-            unoptimized
-            className="h-48 w-full object-contain transition-transform duration-300 ease-in-out transform group-hover:scale-110"
-        />
+          {
+            // !nftImageUrl || nftImageUrl == "" ? (<div className='mt-12 flex justify-center'><Spinner /></div>) : 
+            (
+              <Image
+                  src={nftImageUrl}
+                  alt={nft?.name as string}
+                  width={50}
+                  height={50}
+                  unoptimized
+                  priority
+                  className="h-48 w-full object-contain transition-transform duration-300 ease-in-out transform group-hover:scale-110"
+              />
+            )
+          }
+        
         </div>
         </CardHeader>
         <CardContent className="px-4 py-2 flex justify-between">
-          <div className='flex-col space-y-1'>
-            <CardTitle>{nft.name}</CardTitle>
-            <p className="text-sm text-gray-500">{Number(nft.price)/(10**18)} ETH</p>
+          <div className='flex-col space-y-1 w-full'>
+            <CardTitle className='flex justify-between w-full'>
+              <div>{nft?.name}</div>
+              <Badge>{nft?.category}</Badge>
+            </CardTitle>
+            <p className="text-sm text-gray-500">{Number(nft?.price)/(10**18)} ETH</p>
           </div>
-          <Badge className='rounded-3xl py-0 px-4'>{nft.category}</Badge>
+          
         </CardContent>
+        
         <CardFooter className="p-4">
-        <div className='flex space-x-4 items-center w-full'>
+        <div className='flex space-x-4 items-center w-full text-xl'>
           <Button className="w-full" 
-            onClick={() => openModal(nft)}
+            onClick={() => openModal(nft as any)}
           >View Details</Button>
 
             {
               isNftLiked ? 
-              (<Heart fill='red' color='red' strokeWidth={0} size={36} onClick={() => likeOrUnlikeNft(nft.tokenId)} />) : 
-              (<Heart size={36}  color='red' onClick={() => likeOrUnlikeNft(nft.tokenId)} />)
+              (<Heart fill='red' className='hover:cursor-pointer' color='red' strokeWidth={0} size={36} onClick={() => likeOrUnlikeNft(nft?.tokenId as unknown as number)} />) : 
+              (<Heart size={36} className='hover:cursor-pointer'  color='red' onClick={() => likeOrUnlikeNft(nft?.tokenId as unknown as number)} />)
             }
-            {Number(nft.numberOfLikes)}
+            {Number(nft?.numberOfLikes)}
+            
             
         </div>
         
@@ -238,7 +392,7 @@ const NftCard = ({nft} : {nft: any}) => {
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>{nft.name}</DialogTitle>
+        <DialogTitle>{nft?.name}</DialogTitle>
         <DialogDescription>NFT Details</DialogDescription>
       </DialogHeader>
       <div className="grid gap-4 py-4">
@@ -246,7 +400,7 @@ const NftCard = ({nft} : {nft: any}) => {
           {selectedNFT && (
             <Image
               src={nftImageUrl}
-              alt={nft.name}
+              alt={nft?.name as string}
               unoptimized
               layout="fill"
               objectFit="contain"
@@ -255,28 +409,35 @@ const NftCard = ({nft} : {nft: any}) => {
         </div>
         <div className="flex justify-between items-center">
           <span className="font-bold">Price:</span>
-          <span>{Number(Number(nft.price)/(10**18))} ETH</span>
+          <span>{Number(Number(nft?.price)/(10**18))} ETH</span>
         </div>
         <div className='flex flex-col space-y-1'>
         {
-          nft.isListed == true ? (<Button disabled>Listed</Button>) : (
+          nft?.isListed == true ? (<Button disabled>Listed</Button>) : (
         
         <Button onClick={async() => {
-          console.log(`Listing NFT: ${nft.name}`)
+          console.log(`Listing NFT: ${nft?.name}`)
           try {
-            await listNft(Number(nft.tokenId))
+            await listNft(Number(nft?.tokenId))
+            // setIsModalOpen(false)
+            // toast({
+            //   title: "Successfully Lsited the NFT on Marketplace",
+            //   // description: "Friday, February 10, 2023 at 5:57 PM",
+            // })
           } catch (error: any) {
             console.log("Errorrrrrrrrrrr: ", error.message)
           }
 
-        }} disabled={isPending}>
+        }} 
+        // disabled={isListNftPending}
+        >
           List NFT
         </Button>
         
         )
       }
       {
-        nft.isListed == true && nft.isSold == false && (
+        nft?.isListed == true && nft.isSold == false && nft.owner != address && (
           <Button onClick={async() => {
             console.log(`Buying NFT: ${nft.name}`)
             try {
@@ -285,7 +446,9 @@ const NftCard = ({nft} : {nft: any}) => {
               console.log("Errorrrrrrrrrrr: ", error.message)
             }
   
-          }}>
+          }} 
+          // disabled={isBuyNftPending}
+          >
             Buy NFT
         </Button>
         )
