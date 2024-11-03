@@ -3,48 +3,26 @@
 'use client'
 
 import * as React from 'react'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { PlusCircle, LayoutDashboard, ShoppingBag, Search, X, Heart, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarProvider,
-  SidebarRail,
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { useAccount } from 'wagmi';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
 import MintNftModal from '@/components/MintNftModal'
 import NftCard from '@/components/NftCard'
-import { useReadContract, useWriteContract, useSimulateContract } from 'wagmi'
+import { useReadContract } from 'wagmi'
 import { basicNftAbi, marketPlaceAbi } from '@/lib/constants'
-import { QueryKey, useQueryClient } from '@tanstack/react-query'
+import { QueryKey } from '@tanstack/react-query'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import DashboardPagesSidebarProvider from '@/components/DashboardPagesSidebarProvider'
-// import { useAppContext } from '@/context/AppContext'
 
 
 
 export default function Dashboard() {
   
-  // const {basicNftContractAddress, myNfts, getMyNftsQueryKey} = useAppContext()
   
   interface NFT {
     id: number
@@ -83,32 +61,10 @@ export default function Dashboard() {
     abi: basicNftAbi,
     address: basicNftAddress,
     functionName: 'getMyNftsTokenIds',
-    // args: [BigInt(0)]
     account: address
   })
 
   console.log("My NFTs token Ids in Dashboard: ", myNftsTokenIds)
-
-  // const myLikedNfts = useReadContract({
-  //   abi: basicNftAbi,
-  //   address: basicNftAddress,
-  //   functionName: 'getMyLikedNfts',
-  //   // args: [BigInt(0)]
-  //   account: address
-  // }).data
-
-
-  // console.log("Nfts: ", Nfts)
-
-  // React.useEffect(() => {
-
-  //   queryClient.invalidateQueries({ queryKey })
-
-  // }, [nfts, queryClient])
-
-  // console.log("My NFTs: ",nfts)
-
-
 
   const itemsPerPage = 3
   let totalPages = 0;
@@ -137,8 +93,6 @@ export default function Dashboard() {
   }
 
 
-
-
   return (
    
       <DashboardPagesSidebarProvider>
@@ -147,16 +101,6 @@ export default function Dashboard() {
           <header className="flex h-16 items-center gap-4 border-border px-6 w-full">
             <SidebarTrigger />
             <div className="flex flex-1 items-center space-x-4">
-              <form className="flex-1">
-                {/* <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4" />
-                  <Input
-                    type="search"
-                    placeholder="Search NFTs..."
-                    className="w-full pl-8 md:w-2/3 lg:w-1/3"
-                  />
-                </div> */}
-              </form>
             </div>
             <ConnectButton chainStatus="full" />
             <ThemeToggle />
@@ -206,9 +150,6 @@ export default function Dashboard() {
 
           </main>
         </SidebarInset>
-      
-        
-
       
     </DashboardPagesSidebarProvider>
   )
