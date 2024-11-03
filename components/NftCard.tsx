@@ -8,7 +8,7 @@ import axios from 'axios'
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from './ui/dialog'
 import { DialogHeader } from './ui/dialog'
 import { useWriteContract, useReadContract, useAccount, useTransactionReceipt } from 'wagmi'
-import { basicNftAbi, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
+import { basicNftAbi, marketPlaceAbi } from '@/lib/constants'
 import { parseEther } from 'viem'
 import { CheckCircle2, Heart } from 'lucide-react';
 import { Badge } from './ui/badge'
@@ -56,7 +56,7 @@ const NftCard = ({nftsTokenId} : {nftsTokenId: any}) => {
 
   const basicNftAddress: `0x${string}` = useReadContract({
     abi: marketPlaceAbi,
-    address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+    address: process.env.NEXT_PUBLIC_NFT_MARKETPLACE_CONTRACT_ADDRESS as `0x${string}`,
     functionName: 'getBasicNftContractAddress'
   }).data as `0x${string}`
 
@@ -89,7 +89,7 @@ const NftCard = ({nftsTokenId} : {nftsTokenId: any}) => {
 
   let listingPrice = Number(useReadContract({
     abi: marketPlaceAbi,
-    address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+    address: process.env.NEXT_PUBLIC_NFT_MARKETPLACE_CONTRACT_ADDRESS as `0x${string}`,
     functionName: 'getListingPrice',
     // args: [BigInt(0)]
     account: address
@@ -106,7 +106,7 @@ const NftCard = ({nftsTokenId} : {nftsTokenId: any}) => {
         abi: marketPlaceAbi,
         functionName: 'listNft',
         args: [BigInt(tokenId)],
-        address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+        address: process.env.NEXT_PUBLIC_NFT_MARKETPLACE_CONTRACT_ADDRESS as `0x${string}`,
         account: address,
         value: parseEther(`${listingPrice}`)
       })
@@ -214,10 +214,21 @@ const NftCard = ({nftsTokenId} : {nftsTokenId: any}) => {
 
   useEffect(() => {
     if(isListNftTxSuccess || isListNftErrored) {
+      setIsListingLoading(false)
+      // setIsModalOpen(false)
       queryClient.invalidateQueries({ queryKey: getMyNftsTokenIdsQueryKey })
       queryClient.invalidateQueries({ queryKey: getNftFromTokenIdQueryKey })
     }
   }, [isListNftTxSuccess, isListNftErrored, getMyNftsTokenIdsQueryKey, getNftFromTokenIdQueryKey ])
+
+  useEffect(() => {
+    if(isBuyNftTxSuccess || isBuyNftErrored) {
+      setIsBuyingLoading(false)
+      // setIsModalOpen(false)
+      //queryClient.invalidateQueries({ queryKey: getMyNftsTokenIdsQueryKey })
+      //queryClient.invalidateQueries({ queryKey: getNftFromTokenIdQueryKey })
+    }
+  }, [isBuyNftTxSuccess, isBuyNftErrored, getMyNftsTokenIdsQueryKey, getNftFromTokenIdQueryKey ])
 
   // Use it later
   useEffect(() => {
@@ -323,6 +334,8 @@ const NftCard = ({nftsTokenId} : {nftsTokenId: any}) => {
     //   queryClient.invalidateQueries({ queryKey: getMyNftsQueryKey })
     // }
 
+    const [isListingLoading, setIsListingLoading] = useState(false)
+    const [isBuyingLoading, setIsBuyingLoading] = useState(false)
 
     if(nft?.owner == "0x0000000000000000000000000000000000000000") {
       return null
@@ -418,20 +431,18 @@ const NftCard = ({nftsTokenId} : {nftsTokenId: any}) => {
         <Button onClick={async() => {
           console.log(`Listing NFT: ${nft?.name}`)
           try {
+            setIsListingLoading(true)
             await listNft(Number(nft?.tokenId))
-            // setIsModalOpen(false)
-            // toast({
-            //   title: "Successfully Lsited the NFT on Marketplace",
-            //   // description: "Friday, February 10, 2023 at 5:57 PM",
-            // })
+            // setIsListingLoading(false)
+            
           } catch (error: any) {
             console.log("Errorrrrrrrrrrr: ", error.message)
           }
 
         }} 
-        // disabled={isListNftPending}
+        disabled={isListingLoading}
         >
-          List NFT
+          {isListingLoading ? <div>Listing NFT...</div> : <div>List</div>}
         </Button>
         
         )
@@ -441,15 +452,16 @@ const NftCard = ({nftsTokenId} : {nftsTokenId: any}) => {
           <Button onClick={async() => {
             console.log(`Buying NFT: ${nft.name}`)
             try {
+              setIsBuyingLoading(true)
               await buyNft(Number(nft.tokenId), Number(nft.price)/(10**18))
             } catch (error: any) {
               console.log("Errorrrrrrrrrrr: ", error.message)
             }
   
           }} 
-          // disabled={isBuyNftPending}
+          disabled={isBuyingLoading}
           >
-            Buy NFT
+            {isBuyingLoading ? <div>Buying NFT...</div> : <div>Buy NFT</div>}
         </Button>
         )
       }

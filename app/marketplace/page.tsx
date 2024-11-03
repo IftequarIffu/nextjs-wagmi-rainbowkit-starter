@@ -17,7 +17,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { useAccount, useReadContract } from 'wagmi'
-import { basicNftAbi, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
+import { basicNftAbi, marketPlaceAbi } from '@/lib/constants'
 import NftCard from '@/components/NftCard'
 import { categories } from '@/lib/constants'
 import { config } from '@/lib/wagmiConfig'
@@ -32,7 +32,7 @@ export default function Marketplace() {
 
     let listingPrice = Number(useReadContract({
         abi: marketPlaceAbi,
-        address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+        address: process.env.NEXT_PUBLIC_NFT_MARKETPLACE_CONTRACT_ADDRESS as `0x${string}`,
         functionName: 'getListingPrice',
         // args: [BigInt(0)]
         account: address
@@ -44,7 +44,7 @@ export default function Marketplace() {
 
     const basicNftAddress: `0x${string}` = useReadContract({
         abi: marketPlaceAbi,
-        address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+        address: process.env.NEXT_PUBLIC_NFT_MARKETPLACE_CONTRACT_ADDRESS as `0x${string}`,
         functionName: 'getBasicNftContractAddress'
       }).data as `0x${string}`
 
@@ -388,7 +388,7 @@ const filteredNFTTokenIds = React.useMemo(() => {
           {/* Header */}
           <header className="flex flex-col sm:flex-row justify-between items-center mb-8">
             <Link href={"/dashboard"}>
-                <Button className='bg-border text-white hover:text-black'>
+                <Button className=''>
                   <ChevronLeft />
                   Back to Dashboard
                   
@@ -431,87 +431,88 @@ const filteredNFTTokenIds = React.useMemo(() => {
           {/* NFT Grid */}
           <h1 className="text-2xl font-bold mb-4">Marketplace</h1>
 
-          {/* <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <Input
-              type="search"
-              placeholder="Search NFTs..."
-              className="pl-10 w-full sm:w-64"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-          </div> */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          
-            {currentNFTsTokenIds?.map((tokenId: any) => (
-            //   <Card key={nft.id} className="overflow-hidden">
-            //     <CardHeader className="p-0">
-            //       <div className="relative aspect-square">
-            //         <Image
-            //           src={nft.image}
-            //           alt={nft.name}
-            //           layout="fill"
-            //           objectFit="contain"
-            //         />
-            //       </div>
-            //     </CardHeader>
-            //     <CardContent className="p-4">
-            //       <CardTitle className="text-lg">{nft.name}</CardTitle>
-            //       <div className="flex justify-between items-center mt-2">
-            //         <span className="text-sm text-gray-500">{nft.price}</span>
-            //         <Badge>{nft.category}</Badge>
-            //       </div>
-            //     </CardContent>
-            //     <CardFooter className="p-4 flex justify-between items-center">
-            //       <Button variant="outline" size="sm">
-            //         View Details
-            //       </Button>
-            //       <div className="flex items-center space-x-1">
-            //         <Heart className="h-4 w-4 text-gray-400" />
-            //         <span className="text-sm text-gray-500">{nft.likes}</span>
-            //       </div>
-            //     </CardFooter>
-            //   </Card>
-            <NftCard key={tokenId} nftsTokenId={tokenId}/>
-            ))}
-          </div>
+          {
+            !currentNFTsTokenIds || currentNFTsTokenIds.length <= 0 ? (<div className='flex justify-center items-center mt-36 text-3xl'>Aww Snap!! No NFTs found</div>) : 
 
-          {/* Pagination */}
-          {/* <div className="mt-8 flex justify-center">
-            <Button variant="outline" className="mx-1">Previous</Button>
-            <Button variant="outline" className="mx-1">1</Button>
-            <Button variant="outline" className="mx-1">2</Button>
-            <Button variant="outline" className="mx-1">3</Button>
-            <Button variant="outline" className="mx-1">Next</Button>
-          </div> */}
-          <div className="mt-8 flex justify-center items-center space-x-2">
-            <Button
-                variant="outline"
-                size="icon"
-                onClick={goToPreviousPage}
-                disabled={currentPage === 1}
-            >
-                <ChevronLeft  className="h-4 w-4" />
-            </Button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <Button
-                key={page}
-                variant={currentPage === page ? "default" : "outline"}
-                size="icon"
-                onClick={() => goToPage(page)}
-                >
-                {page}
-                </Button>
-            ))}
-            <Button
-                variant="outline"
-                size="icon"
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages}
-            >
-                <ChevronRight className="h-4 w-4" />
-            </Button>
+            (
+    
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          
+          {currentNFTsTokenIds?.map((tokenId: any) => (
+          //   <Card key={nft.id} className="overflow-hidden">
+          //     <CardHeader className="p-0">
+          //       <div className="relative aspect-square">
+          //         <Image
+          //           src={nft.image}
+          //           alt={nft.name}
+          //           layout="fill"
+          //           objectFit="contain"
+          //         />
+          //       </div>
+          //     </CardHeader>
+          //     <CardContent className="p-4">
+          //       <CardTitle className="text-lg">{nft.name}</CardTitle>
+          //       <div className="flex justify-between items-center mt-2">
+          //         <span className="text-sm text-gray-500">{nft.price}</span>
+          //         <Badge>{nft.category}</Badge>
+          //       </div>
+          //     </CardContent>
+          //     <CardFooter className="p-4 flex justify-between items-center">
+          //       <Button variant="outline" size="sm">
+          //         View Details
+          //       </Button>
+          //       <div className="flex items-center space-x-1">
+          //         <Heart className="h-4 w-4 text-gray-400" />
+          //         <span className="text-sm text-gray-500">{nft.likes}</span>
+          //       </div>
+          //     </CardFooter>
+          //   </Card>
+          <NftCard key={tokenId} nftsTokenId={tokenId}/>
+          ))}
             </div>
+
+              {/* Pagination */}
+              {/* <div className="mt-8 flex justify-center">
+                <Button variant="outline" className="mx-1">Previous</Button>
+                <Button variant="outline" className="mx-1">1</Button>
+                <Button variant="outline" className="mx-1">2</Button>
+                <Button variant="outline" className="mx-1">3</Button>
+                <Button variant="outline" className="mx-1">Next</Button>
+              </div> */}
+            <div className="mt-8 flex justify-center items-center space-x-2">
+              <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+              >
+                  <ChevronLeft  className="h-4 w-4" />
+              </Button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  size="icon"
+                  onClick={() => goToPage(page)}
+                  >
+                  {page}
+                  </Button>
+              ))}
+              <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+              >
+                  <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+        </>
+            )
+          }
+
+          
         </div>
       </main>
     </div>

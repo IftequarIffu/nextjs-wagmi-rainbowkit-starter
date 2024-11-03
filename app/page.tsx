@@ -28,6 +28,7 @@ export default function Home() {
   // }).data
 
   return (
+    // <BackgroundGradientAnimation>
     <div>
       {/* <nav className='flex justify-end p-4'>
         <ConnectButton />
@@ -50,10 +51,13 @@ export default function Home() {
             <ThemeToggle />
           </div>
         </div>
-        <LandingPageHeroSection />
+        {/* <BackgroundGradientAnimation> */}
+          <LandingPageHeroSection />
+        {/* </BackgroundGradientAnimation> */}
       </div>
       <LandingPageFeaturesSection />
       <LandingPageFooter />
     </div>
+    // {/* </BackgroundGradientAnimation> */}
   );
 }

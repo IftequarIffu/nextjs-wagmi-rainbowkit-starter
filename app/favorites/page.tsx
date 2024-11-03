@@ -26,7 +26,7 @@ import { useAccount } from 'wagmi';
 import MintNftModal from '@/components/MintNftModal'
 import NftCard from '@/components/NftCard'
 import { useReadContract, useWriteContract, useSimulateContract } from 'wagmi'
-import { BASIC_NFT_CONTRACT_ADDRESS, basicNftAbi, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
+import { BASIC_NFT_CONTRACT_ADDRESS, basicNftAbi, marketPlaceAbi } from '@/lib/constants'
 import { useQueryClient } from '@tanstack/react-query'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import DashboardPagesSidebarProvider from '@/components/DashboardPagesSidebarProvider'
@@ -57,7 +57,7 @@ export default function MyLikedNfts() {
 
   const basicNftAddress: `0x${string}` = useReadContract({
     abi: marketPlaceAbi,
-    address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+    address: process.env.NEXT_PUBLIC_NFT_MARKETPLACE_CONTRACT_ADDRESS as `0x${string}`,
     functionName: 'getBasicNftContractAddress'
   }).data as `0x${string}`
 

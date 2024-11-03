@@ -19,18 +19,16 @@ import { PlusCircle, Upload } from "lucide-react"
 import { Card, CardContent } from './ui/card'
 import Image from 'next/image'
 import { pinata } from '@/lib/pinataConfig'
-import { useReadContract, useWriteContract, useSimulateContract, useAccount } from 'wagmi'
-import { BASIC_NFT_CONTRACT_ADDRESS, basicNftAbi, IPFS_BASE_URL, marketPlaceAbi, NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/lib/constants'
-import axios from 'axios'
+import { useReadContract, useWriteContract, useAccount } from 'wagmi'
+import { basicNftAbi, IPFS_BASE_URL, marketPlaceAbi } from '@/lib/constants'
 import { uploadNftToIpfs } from '@/actions/pinataActions'
 import { categories } from '@/lib/constants'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
-import { NFTMintingProgress } from './NftMintingProgress'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { useTransactionReceipt } from 'wagmi'
-import { QueryKey, useQueryClient } from '@tanstack/react-query'
+import { QueryKey } from '@tanstack/react-query'
 import { queryClient } from '@/app/providers'
 import { Spinner } from './LoadingSpinner'
-// import { useAppContext } from '@/context/AppContext'
+import { toast } from 'sonner'
 
 
 export default function MintNftModal({nftsTokenIds, queryKey}: {nftsTokenIds: any, queryKey: QueryKey}) {
@@ -94,7 +92,7 @@ export default function MintNftModal({nftsTokenIds, queryKey}: {nftsTokenIds: an
 
   const basicNftAddress: `0x${string}` = useReadContract({
     abi: marketPlaceAbi,
-    address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+    address: process.env.NEXT_PUBLIC_NFT_MARKETPLACE_CONTRACT_ADDRESS as `0x${string}`,
     functionName: 'getBasicNftContractAddress'
   }).data as `0x${string}`
 
@@ -155,6 +153,12 @@ export default function MintNftModal({nftsTokenIds, queryKey}: {nftsTokenIds: an
     if (isTxSuccess || isTxErrored) {
       setLoading(false)
       setOpen(false)
+      if(isTxSuccess) {
+        toast.success("Minting Success!")
+      }
+      else if(isTxErrored) {
+        toast.error("Minting Failed!")
+      }
       queryClient.invalidateQueries({ queryKey })
     }
   }, [isTxSuccess, isTxErrored, queryKey])

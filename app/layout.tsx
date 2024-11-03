@@ -6,7 +6,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 import { ThemeProvider } from "./theme-provider"
 import { Fredoka } from "next/font/google"
 import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 // import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 
@@ -38,6 +38,7 @@ export default function RootLayout({
       <body
         className={`${fredoka.className} tracking-wide`}
       >
+        {/* <BackgroundGradientAnimation> */}
         <Providers>
         <ThemeProvider
             attribute="class"
@@ -45,7 +46,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {/* <Toaster /> */}
+            <Toaster richColors position="top-center" />
             {/* <nav className='flex justify-end p-4'>
               <ConnectButton />
             </nav> */}
@@ -54,6 +55,7 @@ export default function RootLayout({
             {/* </BackgroundGradientAnimation> */}
         </ThemeProvider>
         </Providers>
+        {/* </BackgroundGradientAnimation> */}
       </body>
     </html>
   );
