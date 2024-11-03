@@ -1,27 +1,13 @@
 import type { Metadata } from "next";
-// import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./providers";
 import '@rainbow-me/rainbowkit/styles.css';
 import { ThemeProvider } from "./theme-provider"
 import { Fredoka } from "next/font/google"
-import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
 import { Toaster } from "sonner";
-// import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 
 const fredoka = Fredoka({ subsets: ['latin'] })
-
-// const geistSans = localFont({
-//   src: "./fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
 
 export const metadata: Metadata = {
   title: "CartooNFT",
@@ -38,7 +24,6 @@ export default function RootLayout({
       <body
         className={`${fredoka.className} tracking-wide`}
       >
-        {/* <BackgroundGradientAnimation> */}
         <Providers>
         <ThemeProvider
             attribute="class"
@@ -47,15 +32,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Toaster richColors position="top-center" />
-            {/* <nav className='flex justify-end p-4'>
-              <ConnectButton />
-            </nav> */}
-            {/* <BackgroundGradientAnimation> */}
               {children}
-            {/* </BackgroundGradientAnimation> */}
         </ThemeProvider>
         </Providers>
-        {/* </BackgroundGradientAnimation> */}
       </body>
     </html>
   );
