@@ -39,11 +39,11 @@ export default function Home() {
       </div> */}
       <div className=
       // 'bg-gradient-to-br from-purple-800 via-violet-900 to-blue-900 opacity-50'
-      'bg-black p-6'
+      'p-6'
       >
         <div className='flex justify-between'>
           <Link href={"/"} >
-              <span className="font-bold text-white text-3xl tracking-wider ms-4">CartooNFT</span>
+              <span className="font-bold text-primary  text-3xl tracking-wider ms-4">CartooNFT</span>
           </Link>
           <div className='flex space-x-4'>
             <ConnectButton />

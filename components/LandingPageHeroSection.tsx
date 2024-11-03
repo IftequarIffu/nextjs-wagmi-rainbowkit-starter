@@ -9,20 +9,20 @@ export default function LandingPageHeroSection() {
       <div className="relative container mx-auto px-4">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
           <div className="max-w-xl">
-            <h1 className="mb-4 text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="mb-4 text-4xl font-normal tracking-tight sm:text-5xl lg:text-6xl">
               Discover, Collect, and Sell Extraordinary Cartoon NFTs
             </h1>
-            <p className="mb-8 text-lg text-gray-300 sm:text-xl">
+            <p className="mb-8 text-lg  sm:text-xl">
               Explore the world&apos;s leading Cartoon NFT marketplace. Buy and sell digital art, collectibles, and more with ease and security.
             </p>
             <div className="flex flex-wrap gap-4">
                 <Link href={"/marketplace"}>
-                <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white">
+                <Button size="lg" className="">
                     Explore NFTs
                 </Button>
               </Link>
               <Link href={"/dashboard"}>
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-purple-900">
+              <Button size="lg" variant="outline" className="">
                 Create NFT
               </Button>
               </Link>
