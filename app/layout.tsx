@@ -10,8 +10,8 @@ import { Toaster } from "sonner";
 const fredoka = Fredoka({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "CartooNFT",
-  description: "An NFT Marketplace for Cartoons",
+  title: "My Web3 App",
+  description: "My web3 App",
 };
 
 export default function RootLayout({
@@ -32,6 +32,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Toaster richColors position="top-center" />
+              
               {children}
         </ThemeProvider>
         </Providers>
